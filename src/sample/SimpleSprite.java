@@ -3,6 +3,7 @@ package sample;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
 
 public class SimpleSprite extends Sprite {
 
@@ -24,28 +25,46 @@ public class SimpleSprite extends Sprite {
     }
 
     @Override
-    public void render(GraphicsContext gc) {
+    public void render(GraphicsContext gc, Affine affine) {
         switch(shape) {
-            case SQUARE: renderSquare(gc);
-            case CIRCLE: renderCircle(gc);
+            case SQUARE: renderSquare(gc, affine);
+            case CIRCLE: renderCircle(gc, affine);
             default:
         }
     }
 
-    private void renderSquare(GraphicsContext gc) {
+    private void renderSquare(GraphicsContext gc, Affine affine) {
         Position pos = getPosition();
+        Affine af = affine.clone();
+        af.appendTranslation(pos.x, pos.y);
+        af.appendRotation(getAngle());
+        gc.setTransform(af);
+
         gc.setFill(fillColor);
         gc.setStroke(strokeColor);
-        gc.fillRect(pos.x, pos.y, getWidth(), getHeight());
-        gc.strokeRect(pos.x, pos.y, getWidth(), getHeight());
+        gc.fillRect(-1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
+        gc.strokeRect(-1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
+
+        for(Sprite child : children) {
+            child.render(gc, af);
+        }
     }
 
-    private void renderCircle(GraphicsContext gc) {
+    private void renderCircle(GraphicsContext gc, Affine affine) {
         Position pos = getPosition();
+        Affine af = affine.clone();
+        af.appendTranslation(pos.x,pos.y);
+        af.appendRotation(getAngle());
+        gc.setTransform(af);
+
         gc.setFill(fillColor);
         gc.setStroke(strokeColor);
-        gc.fillOval(pos.x, pos.y, getWidth(), getHeight());
-        gc.strokeOval(pos.x, pos.y, getWidth(), getHeight());
+        gc.fillOval(-1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
+        gc.strokeOval(-1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
+
+        for(Sprite child : children) {
+            child.render(gc, af);
+        }
     }
 
 }

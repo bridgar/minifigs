@@ -2,6 +2,7 @@ package sample;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.transform.Affine;
 
 public class AnimatedSprite extends Sprite{
     private Image[] images;
@@ -16,9 +17,17 @@ public class AnimatedSprite extends Sprite{
     }
 
     @Override
-    public void render(GraphicsContext gc) {
+    public void render(GraphicsContext gc, Affine affine) {
         Position pos = getPosition();
-        gc.drawImage(images[frameIndex], pos.x, pos.y, getWidth(), getHeight());
+        Affine af = affine.clone();
+        af.appendTranslation(pos.x, pos.y);
+        af.appendRotation(getAngle());
+        gc.transform(af);
+        gc.drawImage(images[frameIndex], -1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
         frameIndex = (frameIndex + 1) % images.length;
+
+        for(Sprite child : children) {
+            child.render(gc, af);
+        }
     }
 }

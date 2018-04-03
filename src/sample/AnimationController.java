@@ -3,6 +3,7 @@ package sample;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.transform.Affine;
 
 public class AnimationController extends AnimationTimer {
 
@@ -30,11 +31,14 @@ public class AnimationController extends AnimationTimer {
         circle.setHeight(100);
         circle.setWidth(100);
         space = new Scenery();
+        space.setPosition(new Position(256, 256));
         earthSprite = new Sprite(earth, new Image("sample/earth.png"));
         sunSprite   = new Sprite(sun, new Image("sample/sun.png"));
-        sun.setPosition(new Position(196, 196));
         spaceSprite = new Sprite(space, new Image("sample/space.png"));
+        spaceSprite.addChild(sunSprite);
+        sunSprite.addChild(earthSprite);
         circleSprite = new SimpleSprite(circle, Sprite.Shape.CIRCLE);
+        sunSprite.addChild(circleSprite);
     }
 
     @Override
@@ -43,15 +47,12 @@ public class AnimationController extends AnimationTimer {
         double elapsedTime = (currentNanoTime - lastNanoTime) / 1000000000.0;
         lastNanoTime = currentNanoTime;
 
-        double x = 232 + 128 * Math.cos(currentNanoTime / 1000000000.0);
-        double y = 232 + 128 * Math.sin(currentNanoTime / 1000000000.0);
+        double x = 128 * Math.cos(currentNanoTime / 1000000000.0);
+        double y = 128 * Math.sin(currentNanoTime / 1000000000.0);
 
         earth.setPosition(new Position(x, y));
         circle.setPosition(new Position(y, x));
         // background image clears canvas
-        spaceSprite.render(gc);
-        earthSprite.render(gc);
-        sunSprite.render(gc);
-        circleSprite.render(gc);
+        spaceSprite.render(gc, new Affine());
     }
 }

@@ -2,10 +2,14 @@ package sample;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.transform.Affine;
+
+import java.util.ArrayList;
 
 public class Sprite {
     protected Image image;
     protected GameObject object;
+    protected ArrayList<Sprite> children = new ArrayList<Sprite>();
     //TODO scaling
 
     // Invisible sprite
@@ -26,10 +30,26 @@ public class Sprite {
 
     public double getWidth() { return object.getWidth(); }
 
-    public void render(GraphicsContext gc) {
-        if(image == null) return;
+    public double getAngle() { return object.getAngle(); }
+
+    public void addChild(Sprite child) {
+        children.add(child);
+    }
+
+    public void render(GraphicsContext gc, Affine affine) {
         Position pos = object.getPosition();
-        gc.drawImage(image, pos.x, pos.y, getWidth(), getHeight());
+        Affine af = affine.clone();
+        // Apply the translations and rotations to the affine of the world
+        af.appendTranslation(pos.x, pos.y);
+        af.appendRotation(getAngle());
+
+        if(image != null) { // Don't render an invisible sprite
+            gc.setTransform(af);
+            gc.drawImage(image, -1 * getWidth() / 2, -1 * getHeight() / 2, getWidth(), getHeight());
+        }
+        for(Sprite child : children) {
+            child.render(gc, af);
+        }
     }
 
     public enum Shape { SQUARE, CIRCLE }
