@@ -1,5 +1,10 @@
 package sample;
 
-public class Unit {
+public class Unit extends GameObject{
+
+    public Unit() {
+
+    }
+
 
 }

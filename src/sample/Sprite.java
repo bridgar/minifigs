@@ -1,82 +1,37 @@
 package sample;
 
-import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class Sprite {
     protected Image image;
-    protected Position position;
-    protected double width, height;
-    protected boolean isCollision;
+    protected GameObject object;
+    //TODO scaling
 
-    // Invisible Sprite
-    public Sprite() {
-        position = new Position();
-        width = 0;
-        height = 0;
+    // Invisible sprite
+    public Sprite(GameObject object) {
+        this.object = object;
     }
 
-    public Sprite(Image image) {
+    public Sprite(GameObject object, Image image) {
+        this.object = object;
         this.image = image;
-        position = new Position();
-        width = 0;
-        height = 0;
+        object.setWidth(image.getWidth());   // Setting object sizes to image sizes
+        object.setHeight(image.getHeight()); // Not sure if this is the right thing to do
     }
 
-    public Sprite(Image image, double width, double height) {
-        this.image = image;
-        this.position = new Position();
-        this.width = width;
-        this.height = height;
-    }
+    public Position getPosition() { return object.getPosition(); }
 
-    public void setPosition(double x, double y) {
-        position = new Position(x, y);
-    }
+    public double getHeight() { return object.getHeight(); }
 
-    public void setPosition(Position position) {
-        this.position = position;
-    }
-
-    public Position getPosition() {
-        return position;
-    }
-
-    public void setWidth(double width) {
-        this.width = width;
-    }
-
-    public double getWidth() {
-        return width;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
-    }
-
-    public double getHeight() {
-        return height;
-    }
+    public double getWidth() { return object.getWidth(); }
 
     public void render(GraphicsContext gc) {
-        gc.drawImage(image, position.x, position.y);
+        if(image == null) return;
+        Position pos = object.getPosition();
+        gc.drawImage(image, pos.x, pos.y, getWidth(), getHeight());
     }
 
-    public Rectangle2D getBoundary() {
-        return new Rectangle2D(position.x, position.y, width, height);
-    }
-
-    public boolean intersects(Sprite s) {
-        return s.getBoundary().intersects(this.getBoundary());
-    }
-
-    public String toString() {
-        return "Position: " + position;
-    }
-
-    public enum Shape {
-        SQUARE, CIRCLE
-    }
+    public enum Shape { SQUARE, CIRCLE }
 }
 

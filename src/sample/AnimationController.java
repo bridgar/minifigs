@@ -8,7 +8,9 @@ public class AnimationController extends AnimationTimer {
 
     private long lastNanoTime;
     private GraphicsContext gc;
-    private Sprite space, earth, sun, circle;
+    private Scenery space;
+    private Unit earth, sun, circle;
+    private Sprite spaceSprite, earthSprite, sunSprite, circleSprite;
     private double zoomLevel;
     private Position cameraCenter;
 
@@ -22,11 +24,17 @@ public class AnimationController extends AnimationTimer {
         Image[] earthArr = {new Image("sample/ufo_0.png"), new Image("sample/ufo_1.png"),
                 new Image("sample/ufo_2.png"), new Image("sample/ufo_3.png"),
                 new Image("sample/ufo_4.png"), new Image("sample/ufo_5.png"),};
-        earth = new AnimatedSprite(earthArr);
-        sun   = new Sprite(new Image("sample/sun.png"));
-        sun.setPosition(196, 196);
-        space = new Sprite(new Image("sample/space.png"));
-        circle = new SimpleSprite(Sprite.Shape.CIRCLE, 100.0, 100.0);
+        earth = new Unit();
+        sun = new Unit();
+        circle = new Unit();
+        circle.setHeight(100);
+        circle.setWidth(100);
+        space = new Scenery();
+        earthSprite = new Sprite(earth, new Image("sample/earth.png"));
+        sunSprite   = new Sprite(sun, new Image("sample/sun.png"));
+        sun.setPosition(new Position(196, 196));
+        spaceSprite = new Sprite(space, new Image("sample/space.png"));
+        circleSprite = new SimpleSprite(circle, Sprite.Shape.CIRCLE);
     }
 
     @Override
@@ -38,12 +46,12 @@ public class AnimationController extends AnimationTimer {
         double x = 232 + 128 * Math.cos(currentNanoTime / 1000000000.0);
         double y = 232 + 128 * Math.sin(currentNanoTime / 1000000000.0);
 
-        earth.setPosition(x, y);
-        circle.setPosition(y, x);
+        earth.setPosition(new Position(x, y));
+        circle.setPosition(new Position(y, x));
         // background image clears canvas
-        space.render(gc);
-        earth.render(gc);
-        sun.render(gc);
-        circle.render(gc);
+        spaceSprite.render(gc);
+        earthSprite.render(gc);
+        sunSprite.render(gc);
+        circleSprite.render(gc);
     }
 }

@@ -9,20 +9,16 @@ public class SimpleSprite extends Sprite {
     private Shape shape;
     private Color fillColor, strokeColor;
 
-    public SimpleSprite(Shape shape, double width, double height) {
+    public SimpleSprite(GameObject object, Shape shape) {
+        super(object);
         this.shape = shape;
-        position = new Position();
-        this.width = width;
-        this.height = height;
         fillColor = Color.WHITE;
         strokeColor = Color.BLACK;
     }
 
-    public SimpleSprite(Shape shape, double width, double height, Color fillColor, Color strokeColor) {
+    public SimpleSprite(GameObject object, Shape shape, Color fillColor, Color strokeColor) {
+        super(object);
         this.shape = shape;
-        position = new Position();
-        this.width = width;
-        this.height = height;
         this.fillColor = fillColor;
         this.strokeColor = strokeColor;
     }
@@ -37,17 +33,19 @@ public class SimpleSprite extends Sprite {
     }
 
     private void renderSquare(GraphicsContext gc) {
+        Position pos = getPosition();
         gc.setFill(fillColor);
         gc.setStroke(strokeColor);
-        gc.fillRect(position.x, position.y, width, height);
-        gc.strokeRect(position.x, position.y, width, height);
+        gc.fillRect(pos.x, pos.y, getWidth(), getHeight());
+        gc.strokeRect(pos.x, pos.y, getWidth(), getHeight());
     }
 
     private void renderCircle(GraphicsContext gc) {
+        Position pos = getPosition();
         gc.setFill(fillColor);
         gc.setStroke(strokeColor);
-        gc.fillOval(position.x, position.y, width, height);
-        gc.strokeOval(position.x, position.y, width, height);
+        gc.fillOval(pos.x, pos.y, getWidth(), getHeight());
+        gc.strokeOval(pos.x, pos.y, getWidth(), getHeight());
     }
 
 }
