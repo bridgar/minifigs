@@ -1,12 +1,10 @@
-package sample;
+package view;
 
 import javafx.animation.AnimationTimer;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Affine;
 
+import javafx.geometry.Point2D;
 import java.util.ArrayList;
 
 public class AnimationController extends AnimationTimer {
@@ -16,7 +14,7 @@ public class AnimationController extends AnimationTimer {
     private ArrayList<Sprite> unitSprites;    //TODO should have better data structure
     private ArrayList<Sprite> scenerySprites; //TODO should have better data structure
     private double zoomLevel;
-    private Position cameraCenter;
+    private Point2D cameraCenter;
 
     public AnimationController(long firstNanoTime, GraphicsContext gc) {
         lastNanoTime = firstNanoTime;
@@ -25,7 +23,7 @@ public class AnimationController extends AnimationTimer {
         scenerySprites = new ArrayList<Sprite>();
 
         zoomLevel = 1;
-        cameraCenter = new Position();
+        cameraCenter = new Point2D(0, 0);
 
 
     }
@@ -51,5 +49,21 @@ public class AnimationController extends AnimationTimer {
         for (Sprite s : unitSprites) {
             s.render(gc, new Affine()); //TODO change this affine to the camera affine
         }
+    }
+
+    public Sprite spriteAt(double canvasX, double canvasY) { //TODO better algorithm to go along with better data structure
+        for (Sprite s : unitSprites) {
+            if(s.contains(new Affine(), canvasX, canvasY)) { //TODO change this affine to the camera affine
+                return s;
+            }
+        }
+
+        for (Sprite s : scenerySprites) {
+            if(s.contains(new Affine(), canvasX, canvasY)) { //TODO change this affine to the camera affine
+                return s;
+            }
+        }
+
+        return null;
     }
 }

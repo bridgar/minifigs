@@ -1,8 +1,11 @@
-package sample;
+package view;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.transform.Affine;
+import model.GameObject;
+
+import javafx.geometry.Point2D;
 
 public class AnimatedSprite extends Sprite{
     private Image[] images;
@@ -12,15 +15,13 @@ public class AnimatedSprite extends Sprite{
         super(object);
         this.images = images;
         frameIndex = 0;
-        object.setHeight(images[0].getHeight()); // Setting sizes to be those of first image
-        object.setWidth(images[0].getWidth());   // This is probably not sustainable
     }
 
     @Override
     public void render(GraphicsContext gc, Affine affine) {
-        Position pos = getPosition();
+        Point2D pos = getCenter();
         Affine af = affine.clone();
-        af.appendTranslation(pos.x, pos.y);
+        af.appendTranslation(pos.getX(), pos.getY());
         af.appendRotation(getAngle());
         gc.transform(af);
         gc.drawImage(images[frameIndex], -1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());

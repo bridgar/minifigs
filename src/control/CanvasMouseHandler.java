@@ -1,8 +1,7 @@
-package sample;
+package control;
 
+import control.GameController;
 import javafx.event.EventHandler;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
@@ -22,7 +21,7 @@ public class CanvasMouseHandler implements EventHandler<MouseEvent> {
         if(event.getEventType() == MouseEvent.MOUSE_PRESSED) {
             xPress = event.getSceneX();
             yPress = event.getSceneY();
-            gc.selectUnit(xPress, yPress); //TODO shouldn't always select
+            gc.toggleSelectGameObject(xPress, yPress); //TODO shouldn't always select
             dragging = false;
         }
         else if(event.getEventType() == MouseEvent.DRAG_DETECTED) dragging = true;

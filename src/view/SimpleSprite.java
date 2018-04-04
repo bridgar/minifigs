@@ -1,9 +1,12 @@
-package sample;
+package view;
 
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
+import model.GameObject;
 
 public class SimpleSprite extends Sprite {
 
@@ -25,18 +28,39 @@ public class SimpleSprite extends Sprite {
     }
 
     @Override
-    public void render(GraphicsContext gc, Affine affine) {
+    public boolean contains(Affine affine, double x, double y) {
         switch(shape) {
-            case SQUARE: renderSquare(gc, affine);
-            case CIRCLE: renderCircle(gc, affine);
-            default:
+            case SQUARE: return squareContains(affine, x, y) || childrenContains(affine, x, y);
+            case CIRCLE: return circleContains(affine, x, y) || childrenContains(affine, x, y);
+            default: return false;
         }
     }
 
-    private void renderSquare(GraphicsContext gc, Affine affine) {
-        Position pos = getPosition();
+    private boolean squareContains(Affine affine, double x, double y) {
+        Point2D pos = getCenter();
+        BoundingBox bb = new BoundingBox(pos.getX() - getWidth()/2, pos.getY() - getHeight()/2,
+                getWidth(), getHeight());
+        Bounds b = affine.transform(bb);
+        return b.contains(x, y);
+    }
+
+    private boolean circleContains(Affine affine, double x, double y) {
+        return squareContains(affine, x, y); //TODO do real boundingcircle calculations
+    }
+
+    @Override
+    public void render(GraphicsContext gc, Affine affine) {
+        switch(shape) {
+            case SQUARE: squareRender(gc, affine);
+            case CIRCLE: circleRender(gc, affine);
+            default: return;
+        }
+    }
+
+    private void squareRender(GraphicsContext gc, Affine affine) {
+        Point2D center = getCenter();
         Affine af = affine.clone();
-        af.appendTranslation(pos.x, pos.y);
+        af.appendTranslation(center.getX(), center.getY());
         af.appendRotation(getAngle());
         gc.setTransform(af);
 
@@ -50,10 +74,10 @@ public class SimpleSprite extends Sprite {
         }
     }
 
-    private void renderCircle(GraphicsContext gc, Affine affine) {
-        Position pos = getPosition();
+    private void circleRender(GraphicsContext gc, Affine affine) {
+        Point2D center = getCenter();
         Affine af = affine.clone();
-        af.appendTranslation(pos.x,pos.y);
+        af.appendTranslation(center.getX(),center.getY());
         af.appendRotation(getAngle());
         gc.setTransform(af);
 
