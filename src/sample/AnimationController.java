@@ -1,44 +1,41 @@
 package sample;
 
 import javafx.animation.AnimationTimer;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Affine;
+
+import java.util.ArrayList;
 
 public class AnimationController extends AnimationTimer {
 
     private long lastNanoTime;
     private GraphicsContext gc;
-    private Scenery space;
-    private Unit earth, sun, circle;
-    private Sprite spaceSprite, earthSprite, sunSprite, circleSprite;
+    private ArrayList<Sprite> unitSprites;    //TODO should have better data structure
+    private ArrayList<Sprite> scenerySprites; //TODO should have better data structure
     private double zoomLevel;
     private Position cameraCenter;
 
     public AnimationController(long firstNanoTime, GraphicsContext gc) {
         lastNanoTime = firstNanoTime;
         this.gc = gc;
+        unitSprites = new ArrayList<Sprite>();
+        scenerySprites = new ArrayList<Sprite>();
 
         zoomLevel = 1;
         cameraCenter = new Position();
 
-        Image[] earthArr = {new Image("sample/ufo_0.png"), new Image("sample/ufo_1.png"),
-                new Image("sample/ufo_2.png"), new Image("sample/ufo_3.png"),
-                new Image("sample/ufo_4.png"), new Image("sample/ufo_5.png"),};
-        earth = new Unit();
-        sun = new Unit();
-        circle = new Unit();
-        circle.setHeight(100);
-        circle.setWidth(100);
-        space = new Scenery();
-        space.setPosition(new Position(256, 256));
-        earthSprite = new Sprite(earth, new Image("sample/earth.png"));
-        sunSprite   = new Sprite(sun, new Image("sample/sun.png"));
-        spaceSprite = new Sprite(space, new Image("sample/space.png"));
-        spaceSprite.addChild(sunSprite);
-        sunSprite.addChild(earthSprite);
-        circleSprite = new SimpleSprite(circle, Sprite.Shape.CIRCLE);
-        sunSprite.addChild(circleSprite);
+
+    }
+
+    public void addUnitSprite(Sprite sprite) {
+        unitSprites.add(sprite);
+    }
+
+    public void addScenerySprite(Sprite sprite) {
+        scenerySprites.add(sprite);
     }
 
     @Override
@@ -47,12 +44,12 @@ public class AnimationController extends AnimationTimer {
         double elapsedTime = (currentNanoTime - lastNanoTime) / 1000000000.0;
         lastNanoTime = currentNanoTime;
 
-        double x = 128 * Math.cos(currentNanoTime / 1000000000.0);
-        double y = 128 * Math.sin(currentNanoTime / 1000000000.0);
+        for (Sprite s : scenerySprites) {
+            s.render(gc, new Affine()); //TODO change this affine to the camera affine
+        }
 
-        earth.setPosition(new Position(x, y));
-        circle.setPosition(new Position(y, x));
-        // background image clears canvas
-        spaceSprite.render(gc, new Affine());
+        for (Sprite s : unitSprites) {
+            s.render(gc, new Affine()); //TODO change this affine to the camera affine
+        }
     }
 }
