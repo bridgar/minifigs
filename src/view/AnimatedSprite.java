@@ -7,7 +7,7 @@ import javafx.scene.transform.Affine;
 import model.GameObject;
 
 public class AnimatedSprite extends Sprite{
-    private Image[] images;
+    private final Image[] images;
     private int frameIndex;
 
     public AnimatedSprite(GameObject object, Image[] images) {

@@ -14,11 +14,11 @@ import java.util.ArrayList;
 
 
 public class GameController implements FrameListener{
-    private AnimationController ac;
-    private ArrayList<Unit> units;      //TODO should have better data structure
-    private ArrayList<Scenery> scenery; //TODO should have better data structure
-    private ArrayList<Unit> selectedUnits;
-    private ArrayList<GameAction> activeActions;
+    private final AnimationController ac;
+    private final ArrayList<Unit> units;      //TODO should have better data structure
+    private final ArrayList<Scenery> scenery; //TODO should have better data structure
+    private final ArrayList<Unit> selectedUnits;
+    private final ArrayList<GameAction> activeActions;
 
     private static final double X_MOVE = 5.0;
     private static final double Y_MOVE = 5.0;
@@ -60,7 +60,7 @@ public class GameController implements FrameListener{
 
     public void newFrame(double dt) { performActions(dt); } //TODO this should really not be frame dependent
 
-    public void performActions(double dt) {
+    private void performActions(double dt) {
         for(GameAction action : activeActions) {
             if(action == GameAction.MOVELEFT)
                 moveSelectedLeft(dt);

@@ -4,12 +4,12 @@ import javafx.event.EventHandler;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
-public class CanvasMouseHandler implements EventHandler<MouseEvent> {
+class CanvasMouseHandler implements EventHandler<MouseEvent> {
 
     private final double MIN_DRAG_DISTANCE = 25.0;
     private boolean dragging = false;
     private double xPress, yPress, xDrag, yDrag;
-    private GameController gc;
+    private final GameController gc;
 
     public CanvasMouseHandler(GameController gc) {
         this.gc = gc;

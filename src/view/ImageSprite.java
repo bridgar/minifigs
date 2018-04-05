@@ -8,7 +8,7 @@ import model.GameObject;
 
 public class ImageSprite extends Sprite {
 
-    protected Image image;
+    private Image image;
 
     public ImageSprite(GameObject object, Image image) {
         super(object);

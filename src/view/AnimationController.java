@@ -1,7 +1,6 @@
 package view;
 
 import javafx.animation.AnimationTimer;
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
 
@@ -10,11 +9,10 @@ import java.util.ArrayList;
 public class AnimationController extends AnimationTimer {
 
     private long lastNanoTime;
-    private GraphicsContext gc;
-    private ArrayList<FrameListener> listeners;
-    private ArrayList<Sprite> unitSprites;    //TODO should have better data structure
-    private ArrayList<Sprite> scenerySprites; //TODO should have better data structure
-    private double zoomLevel;
+    private final GraphicsContext gc;
+    private final ArrayList<FrameListener> listeners;
+    private final ArrayList<Sprite> unitSprites;    //TODO should have better data structure
+    private final ArrayList<Sprite> scenerySprites; //TODO should have better data structure
     private Affine cameraAffine;
 
     public AnimationController(long firstNanoTime, GraphicsContext gc) {
@@ -23,8 +21,6 @@ public class AnimationController extends AnimationTimer {
         listeners = new ArrayList<FrameListener>();
         unitSprites = new ArrayList<Sprite>();
         scenerySprites = new ArrayList<Sprite>();
-
-        zoomLevel = 1;
         cameraAffine = new Affine();
 
 

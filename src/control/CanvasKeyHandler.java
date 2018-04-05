@@ -4,10 +4,8 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
-import java.security.Key;
-
-public class CanvasKeyHandler implements EventHandler<KeyEvent> {
-    private GameController gc;
+class CanvasKeyHandler implements EventHandler<KeyEvent> {
+    private final GameController gc;
 
     public CanvasKeyHandler(GameController gc) {
         this.gc = gc;

@@ -3,11 +3,12 @@ package model;
 import javafx.geometry.Point2D;
 
 public abstract class GameObject {
-    protected Point2D center;             // Point2D of center of object
-    protected double width, height;     // Width and height of object before rotation
-    protected double angle;             // Rotation in radians
+    private Point2D center;             // Point2D of center of object
+    private double width;
+    private double height;     // Width and height of object before rotation
+    private double angle;             // Rotation in radians
 
-    public GameObject() { center = new Point2D(0, 0); }
+    GameObject() { center = new Point2D(0, 0); }
 
     public void setCenter(Point2D center) { this.center = center; }
     public Point2D getCenter() { return center; }

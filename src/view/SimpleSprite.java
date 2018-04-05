@@ -9,7 +9,8 @@ import model.GameObject;
 public class SimpleSprite extends Sprite {
 
     private Shape shape;
-    private Color fillColor, strokeColor;
+    private final Color fillColor;
+    private Color strokeColor;
 
     public SimpleSprite(GameObject object, Shape shape) {
         super(object);
@@ -40,7 +41,8 @@ public class SimpleSprite extends Sprite {
             rectangleRender(gc, affine);
         else if(shape == Shape.CIRCLE)
             circleRender(gc, affine);
-        else return;
+        else {
+        }
     }
 
     private void rectangleRender(GraphicsContext gc, Affine affine) {
