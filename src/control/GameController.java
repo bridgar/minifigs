@@ -3,6 +3,7 @@ package control;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import model.GameObject;
 import model.Scenery;
@@ -11,26 +12,74 @@ import view.*;
 
 import java.util.ArrayList;
 
-public class GameController {
+
+public class GameController implements FrameListener{
     private AnimationController ac;
     private ArrayList<Unit> units;      //TODO should have better data structure
     private ArrayList<Scenery> scenery; //TODO should have better data structure
-    private ArrayList<GameObject> selectedGameObjects;
-    private GameObjectType selectedType;
+    private ArrayList<Unit> selectedUnits;
+    private ArrayList<GameAction> activeActions;
+
+    private static final double X_MOVE = 5.0;
+    private static final double Y_MOVE = 5.0;
 
     public GameController(GraphicsContext gc) {
         ac = new AnimationController(System.nanoTime(), gc);
+        ac.registerListener(this);
         units = new ArrayList<Unit>();
         scenery = new ArrayList<Scenery>();
+        selectedUnits = new ArrayList<Unit>();
+        activeActions = new ArrayList<GameAction>();
 
         gc.getCanvas().addEventHandler(MouseEvent.ANY, new CanvasMouseHandler(this));
+        gc.getCanvas().addEventHandler(KeyEvent.ANY, new CanvasKeyHandler(this));
 
         initializeUnits();
         initializeScenery();
 
-        selectedType = GameObjectType.NONE;
 
         ac.start();
+    }
+
+    public void toggleSelectGameObject(double canvasX, double canvasY) {
+        Sprite s = ac.spriteAt(canvasX, canvasY);
+        if(s == null) {
+            selectedUnits.clear();
+            return;
+        }
+        GameObject go = s.getGameObject();
+
+        if(go instanceof Unit) toggleSelectUnit((Unit) go);
+        else selectedUnits.clear();
+
+    }
+
+    public void dragSelected(double canvasX, double canvasY) {
+
+    }
+
+    public void newFrame(double dt) { performActions(dt); } //TODO this should really not be frame dependent
+
+    public void performActions(double dt) {
+        for(GameAction action : activeActions) {
+            if(action == GameAction.MOVELEFT)
+                moveSelectedLeft(dt);
+            else if(action == GameAction.MOVERIGHT)
+                moveSelectedRight(dt);
+            else if(action == GameAction.MOVEUP)
+                moveSelectedUp(dt);
+            else if(action == GameAction.MOVEDOWN)
+                moveSelectedDown(dt);
+        }
+    }
+
+    public void addAction(GameAction action) {
+        if(!activeActions.contains(action))
+            activeActions.add(action);
+    }
+
+    public void removeAction(GameAction action) {
+        activeActions.remove(action);
     }
 
     private void initializeUnits() {
@@ -71,43 +120,34 @@ public class GameController {
         ac.addScenerySprite(spaceSprite);
     }
 
-    public void toggleSelectGameObject(double canvasX, double canvasY) {
-        Sprite s = ac.spriteAt(canvasX, canvasY);
-        GameObject go = s.getGameObject();
-        if(s == null) return;
-        if(go instanceof Unit) toggleSelectUnit((Unit) go);
-        else if(go instanceof Scenery) toggleSelectScenery((Scenery) go);
-
-    }
-
-
     private void toggleSelectUnit(Unit unit) {
-        if(selectedType == GameObjectType.NONE)
-            selectedType = GameObjectType.UNIT;
-        if(selectedType == GameObjectType.UNIT) {
-           selectedGameObjects.add(unit);
-        } else {
-            selectedGameObjects.clear();
-            selectedGameObjects.add(unit);
-            selectedType = GameObjectType.UNIT;
+        if(selectedUnits.contains(unit)) selectedUnits.remove(unit);
+        else selectedUnits.add(unit);
+    }
+
+    private void moveSelectedLeft(double dt) {
+        for(Unit selected : selectedUnits) {
+            selected.setCenter(selected.getCenter().add(-1 * dt * X_MOVE, 0));
         }
     }
 
-    private void toggleSelectScenery(Scenery scenery) {
-        if(selectedType == GameObjectType.NONE)
-            selectedType = GameObjectType.SCENERY;
-        if(selectedType == GameObjectType.SCENERY) {
-            selectedGameObjects.add(scenery);
-        } else {
-            selectedGameObjects.clear();
-            selectedGameObjects.add(scenery);
-            selectedType = GameObjectType.SCENERY;
+    private void moveSelectedRight(double dt) {
+        for(Unit selected : selectedUnits) {
+            selected.setCenter(selected.getCenter().add(dt * X_MOVE, 0));
         }
     }
 
-    public void dragSelected(double canvasX, double canvasY) {
-
+    private void moveSelectedUp(double dt) {
+        for(Unit selected : selectedUnits) {
+            selected.setCenter(selected.getCenter().add(0, -1 * dt * Y_MOVE));
+        }
     }
 
-    public enum GameObjectType { NONE, UNIT, SCENERY}
+    private void moveSelectedDown(double dt) {
+        for(Unit selected : selectedUnits) {
+            selected.setCenter(selected.getCenter().add(0, dt * Y_MOVE));
+        }
+    }
+
+    public enum GameAction{ MOVELEFT, MOVERIGHT, MOVEUP, MOVEDOWN}
 }

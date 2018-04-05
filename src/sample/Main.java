@@ -19,6 +19,7 @@ public class Main extends Application {
         theStage.setScene( theScene );
 
         Canvas canvas = new Canvas( 512, 512 );
+        canvas.setFocusTraversable(true);
         root.getChildren().add( canvas );
 
         GraphicsContext gc = canvas.getGraphicsContext2D();

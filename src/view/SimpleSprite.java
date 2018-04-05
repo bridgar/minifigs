@@ -1,7 +1,5 @@
 package view;
 
-import javafx.geometry.BoundingBox;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -29,35 +27,23 @@ public class SimpleSprite extends Sprite {
 
     @Override
     public boolean contains(Affine affine, double x, double y) {
-        switch(shape) {
-            case SQUARE: return squareContains(affine, x, y) || childrenContains(affine, x, y);
-            case CIRCLE: return circleContains(affine, x, y) || childrenContains(affine, x, y);
-            default: return false;
-        }
-    }
-
-    private boolean squareContains(Affine affine, double x, double y) {
-        Point2D pos = getCenter();
-        BoundingBox bb = new BoundingBox(pos.getX() - getWidth()/2, pos.getY() - getHeight()/2,
-                getWidth(), getHeight());
-        Bounds b = affine.transform(bb);
-        return b.contains(x, y);
-    }
-
-    private boolean circleContains(Affine affine, double x, double y) {
-        return squareContains(affine, x, y); //TODO do real boundingcircle calculations
+        if(shape == Shape.RECTANGLE)
+            return rectangleContains(affine, x, y) || childrenContains(affine, x, y);
+        else if(shape == Shape.CIRCLE)
+            return circleContains(affine, x, y) || childrenContains(affine, x, y);
+        else return false;
     }
 
     @Override
     public void render(GraphicsContext gc, Affine affine) {
-        switch(shape) {
-            case SQUARE: squareRender(gc, affine);
-            case CIRCLE: circleRender(gc, affine);
-            default: return;
-        }
+        if(shape == Shape.RECTANGLE)
+            rectangleRender(gc, affine);
+        else if(shape == Shape.CIRCLE)
+            circleRender(gc, affine);
+        else return;
     }
 
-    private void squareRender(GraphicsContext gc, Affine affine) {
+    private void rectangleRender(GraphicsContext gc, Affine affine) {
         Point2D center = getCenter();
         Affine af = affine.clone();
         af.appendTranslation(center.getX(), center.getY());

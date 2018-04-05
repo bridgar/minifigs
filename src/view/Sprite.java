@@ -1,5 +1,7 @@
 package view;
 
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
@@ -44,6 +46,18 @@ public abstract class Sprite {
         return false;
     }
 
-    public enum Shape { SQUARE, CIRCLE }
+    protected boolean rectangleContains(Affine affine, double x, double y) {
+        Point2D pos = getCenter();
+        BoundingBox bb = new BoundingBox(pos.getX() - getWidth()/2, pos.getY() - getHeight()/2,
+                getWidth(), getHeight());
+        Bounds b = affine.transform(bb);
+        return b.contains(x, y);
+    }
+
+    protected boolean circleContains(Affine affine, double x, double y) {
+        return rectangleContains(affine, x, y); //TODO do real boundingcircle calculations
+    }
+
+    public enum Shape {RECTANGLE, CIRCLE }
 }
 

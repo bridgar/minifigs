@@ -1,11 +1,10 @@
 package view;
 
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.transform.Affine;
 import model.GameObject;
-
-import javafx.geometry.Point2D;
 
 public class ImageSprite extends Sprite {
 
@@ -16,6 +15,7 @@ public class ImageSprite extends Sprite {
         this.image = image;
     }
 
+    @Override
     public void render(GraphicsContext gc, Affine affine){
         Point2D center = object.getCenter();
         Affine af = affine.clone();
@@ -28,5 +28,10 @@ public class ImageSprite extends Sprite {
         for(Sprite child : children) {
             child.render(gc, af);
         }
+    }
+
+    @Override
+    public boolean contains(Affine affine, double canvasX, double canvasY) {
+        return rectangleContains(affine, canvasX, canvasY);
     }
 }
