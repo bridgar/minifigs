@@ -6,16 +6,30 @@ import javafx.scene.image.Image;
 import javafx.scene.transform.Affine;
 import model.GameObject;
 
+/**
+ *  An AnimatedSprite is a Sprite which can be rendered with an array of Images which represent animation frames.
+ */
 public class AnimatedSprite extends Sprite{
     private final Image[] images;
     private int frameIndex;
 
+    /**
+     *  An AnimatedSprite representing the specified GameObject and rendered with the given array of Images.
+     * @param object The GameObject to be represented.
+     * @param images The array of Images to be rendered.
+     */
     public AnimatedSprite(GameObject object, Image[] images) {
         super(object);
         this.images = images;
         frameIndex = 0;
+        this.shape = Shape.RECTANGLE;
     }
 
+    /**
+     *  Renders this Sprite and all of its children.
+     * @param gc The GraphicsContext to be renders to.
+     * @param affine The affine to apply to all renders.
+     */
     @Override
     public void render(GraphicsContext gc, Affine affine) {
         Point2D pos = getCenter();
@@ -25,14 +39,6 @@ public class AnimatedSprite extends Sprite{
         gc.transform(af);
         gc.drawImage(images[frameIndex], -1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
         frameIndex = (frameIndex + 1) % images.length;
-
-        for(Sprite child : children) {
-            child.render(gc, af);
-        }
-    }
-
-    @Override
-    public boolean contains(Affine affine, double canvasX, double canvasY) {
-        return rectangleContains(affine, canvasX, canvasY);
+        renderChildren(gc, af);
     }
 }

@@ -6,15 +6,30 @@ import javafx.scene.image.Image;
 import javafx.scene.transform.Affine;
 import model.GameObject;
 
+/**
+ * An ImageSprite is a Sprite that can be rendered with an Image.
+ * It contains an Image.
+ */
 public class ImageSprite extends Sprite {
 
     private Image image;
 
+    /**
+     *  An ImageSprite representing the provided GameObject with the provided Image.
+     * @param object The GameObject to be represented.
+     * @param image The Image to render.
+     */
     public ImageSprite(GameObject object, Image image) {
         super(object);
         this.image = image;
+        this.shape = Shape.RECTANGLE;
     }
 
+    /**
+     *  Renders the image with the provided Affine applied.
+     * @param gc The GraphicsContext to be renders to.
+     * @param affine The affine to apply to all renders.
+     */
     @Override
     public void render(GraphicsContext gc, Affine affine){
         Point2D center = object.getCenter();
@@ -25,13 +40,6 @@ public class ImageSprite extends Sprite {
 
         gc.setTransform(af);
         gc.drawImage(image, -1 * getWidth() / 2, -1 * getHeight() / 2, getWidth(), getHeight());
-        for(Sprite child : children) {
-            child.render(gc, af);
-        }
-    }
-
-    @Override
-    public boolean contains(Affine affine, double canvasX, double canvasY) {
-        return rectangleContains(affine, canvasX, canvasY);
+        renderChildren(gc, af);
     }
 }
