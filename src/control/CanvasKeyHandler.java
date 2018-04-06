@@ -4,12 +4,24 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
+/**
+ *
+ */
 class CanvasKeyHandler implements EventHandler<KeyEvent> {
     private final GameController gc;
 
+    /**
+     *
+     * @param gc
+     */
     public CanvasKeyHandler(GameController gc) {
         this.gc = gc;
     }
+
+    /**
+     *
+     * @param event
+     */
     @Override
     public void handle(KeyEvent event) {
         if(event.getEventType() == KeyEvent.KEY_PRESSED) {
@@ -19,6 +31,10 @@ class CanvasKeyHandler implements EventHandler<KeyEvent> {
         }
     }
 
+    /**
+     *
+     * @param code
+     */
     private void pressKey(KeyCode code) {
         if(code == KeyCode.LEFT)
             gc.addAction(GameController.GameAction.MOVELEFT);
@@ -30,6 +46,10 @@ class CanvasKeyHandler implements EventHandler<KeyEvent> {
             gc.addAction(GameController.GameAction.MOVEDOWN);
     }
 
+    /**
+     *
+     * @param code
+     */
     private void releaseKey(KeyCode code) {
         if(code == KeyCode.LEFT)
             gc.removeAction(GameController.GameAction.MOVELEFT);

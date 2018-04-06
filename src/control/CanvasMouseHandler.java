@@ -4,6 +4,9 @@ import javafx.event.EventHandler;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
+/**
+ *
+ */
 class CanvasMouseHandler implements EventHandler<MouseEvent> {
 
     private final double MIN_DRAG_DISTANCE = 25.0;
@@ -11,10 +14,18 @@ class CanvasMouseHandler implements EventHandler<MouseEvent> {
     private double xPress, yPress, xDrag, yDrag;
     private final GameController gc;
 
+    /**
+     *
+     * @param gc
+     */
     public CanvasMouseHandler(GameController gc) {
         this.gc = gc;
     }
 
+    /**
+     *
+     * @param event
+     */
     @Override
     public void handle(MouseEvent event) {
         if(event.getEventType() == MouseEvent.MOUSE_PRESSED) {
@@ -28,6 +39,10 @@ class CanvasMouseHandler implements EventHandler<MouseEvent> {
         else if(event.getEventType() == MouseEvent.MOUSE_RELEASED) handleClick(event);
     }
 
+    /**
+     *
+     * @param event
+     */
     private void handleDrag(MouseEvent event) {
         xDrag = event.getSceneX();
         yDrag = event.getSceneY();
@@ -39,15 +54,27 @@ class CanvasMouseHandler implements EventHandler<MouseEvent> {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     private void handleClick(MouseEvent event) {
         if(event.getButton() == MouseButton.SECONDARY) handleRightClick(event);
         else if(event.getButton() == MouseButton.MIDDLE) handleMiddleClick(event);
     }
 
+    /**
+     *
+     * @param event
+     */
     private void handleRightClick(MouseEvent event) {
 
     }
 
+    /**
+     *
+     * @param event
+     */
     private void handleMiddleClick(MouseEvent event) {
 
     }

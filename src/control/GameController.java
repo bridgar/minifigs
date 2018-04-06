@@ -12,7 +12,9 @@ import view.*;
 
 import java.util.ArrayList;
 
-
+/**
+ *
+ */
 public class GameController implements FrameListener{
     private final AnimationController ac;
     private final ArrayList<Unit> units;      //TODO should have better data structure
@@ -23,6 +25,10 @@ public class GameController implements FrameListener{
     private static final double X_MOVE = 5.0;
     private static final double Y_MOVE = 5.0;
 
+    /**
+     *
+     * @param gc
+     */
     public GameController(GraphicsContext gc) {
         ac = new AnimationController(System.nanoTime(), gc);
         ac.registerListener(this);
@@ -41,6 +47,11 @@ public class GameController implements FrameListener{
         ac.start();
     }
 
+    /**
+     *
+     * @param canvasX
+     * @param canvasY
+     */
     public void toggleSelectGameObject(double canvasX, double canvasY) {
         Sprite s = ac.spriteAt(canvasX, canvasY);
         if(s == null) {
@@ -54,12 +65,25 @@ public class GameController implements FrameListener{
 
     }
 
+    /**
+     *
+     * @param canvasX
+     * @param canvasY
+     */
     public void dragSelected(double canvasX, double canvasY) {
 
     }
 
+    /**
+     *
+     * @param dt
+     */
     public void newFrame(double dt) { performActions(dt); } //TODO this should really not be frame dependent
 
+    /**
+     *
+     * @param dt
+     */
     private void performActions(double dt) {
         for(GameAction action : activeActions) {
             if(action == GameAction.MOVELEFT)
@@ -73,15 +97,26 @@ public class GameController implements FrameListener{
         }
     }
 
+    /**
+     *
+     * @param action
+     */
     public void addAction(GameAction action) {
         if(!activeActions.contains(action))
             activeActions.add(action);
     }
 
+    /**
+     *
+     * @param action
+     */
     public void removeAction(GameAction action) {
         activeActions.remove(action);
     }
 
+    /**
+     *
+     */
     private void initializeUnits() {
         Unit earth = new Unit();
         Unit sun = new Unit();
@@ -109,6 +144,9 @@ public class GameController implements FrameListener{
         ac.addUnitSprite(circleSprite);
     }
 
+    /**
+     *
+     */
     private void initializeScenery() {
         Scenery space = new Scenery();
         space.setCenter(new Point2D(256, 256));
@@ -120,34 +158,57 @@ public class GameController implements FrameListener{
         ac.addScenerySprite(spaceSprite);
     }
 
+    /**
+     *
+     * @param unit
+     */
     private void toggleSelectUnit(Unit unit) {
         if(selectedUnits.contains(unit)) selectedUnits.remove(unit);
         else selectedUnits.add(unit);
     }
 
+    /**
+     *
+     * @param dt
+     */
     private void moveSelectedLeft(double dt) {
         for(Unit selected : selectedUnits) {
             selected.setCenter(selected.getCenter().add(-1 * dt * X_MOVE, 0));
         }
     }
 
+    /**
+     *
+     * @param dt
+     */
     private void moveSelectedRight(double dt) {
         for(Unit selected : selectedUnits) {
             selected.setCenter(selected.getCenter().add(dt * X_MOVE, 0));
         }
     }
 
+    /**
+     *
+     * @param dt
+     */
     private void moveSelectedUp(double dt) {
         for(Unit selected : selectedUnits) {
             selected.setCenter(selected.getCenter().add(0, -1 * dt * Y_MOVE));
         }
     }
 
+    /**
+     *
+     * @param dt
+     */
     private void moveSelectedDown(double dt) {
         for(Unit selected : selectedUnits) {
             selected.setCenter(selected.getCenter().add(0, dt * Y_MOVE));
         }
     }
 
+    /**
+     *
+     */
     public enum GameAction{ MOVELEFT, MOVERIGHT, MOVEUP, MOVEDOWN}
 }
