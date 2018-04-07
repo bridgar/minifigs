@@ -5,7 +5,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 /**
- *
+ *  CanvasKeyHandler accepts all KeyEvents for the Canvas. Contains reference to GameController to notify it of changes.
  */
 class CanvasKeyHandler implements EventHandler<KeyEvent> {
     private final GameController gc;

@@ -1,15 +1,16 @@
 package control;
 
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
 /**
- *
+ *  CanvasMouseHandler accepts all MouseEvents for the Canvas. Contains reference to GameController to notify it of changes.
  */
 class CanvasMouseHandler implements EventHandler<MouseEvent> {
 
-    private final double MIN_DRAG_DISTANCE = 25.0;
+    private static final double MIN_DRAG_DISTANCE = 25.0;
     private boolean dragging = false;
     private double xPress, yPress, xDrag, yDrag;
     private final GameController gc;
@@ -31,7 +32,6 @@ class CanvasMouseHandler implements EventHandler<MouseEvent> {
         if(event.getEventType() == MouseEvent.MOUSE_PRESSED) {
             xPress = event.getSceneX();
             yPress = event.getSceneY();
-            gc.toggleSelectGameObject(xPress, yPress); //TODO shouldn't always select
             dragging = false;
         }
         else if(event.getEventType() == MouseEvent.DRAG_DETECTED) dragging = true;
@@ -47,10 +47,13 @@ class CanvasMouseHandler implements EventHandler<MouseEvent> {
         xDrag = event.getSceneX();
         yDrag = event.getSceneY();
 
-        double dragDistance = Math.sqrt((xPress - xDrag) * (xPress - xDrag) + (yPress - yDrag) * (yPress - yDrag));
+        gc.selectCharacter(new Point2D(xPress, yPress)); // Select the Character that you're dragging.
+
+        Point2D dragVec = new Point2D(xDrag - xPress, yDrag - yPress);
+
+        double dragDistance = dragVec.magnitude();
         if(dragDistance > MIN_DRAG_DISTANCE) {
-            //TODO notify gc of drag
-            System.out.println(dragDistance);
+            gc.dragSelected(dragVec);
         }
     }
 
@@ -61,6 +64,13 @@ class CanvasMouseHandler implements EventHandler<MouseEvent> {
     private void handleClick(MouseEvent event) {
         if(event.getButton() == MouseButton.SECONDARY) handleRightClick(event);
         else if(event.getButton() == MouseButton.MIDDLE) handleMiddleClick(event);
+        else {
+            if(!dragging) { // If the mouse is released and wasn't dragged, toggle select a GameObject.
+                gc.toggleSelectCharacter(new Point2D(xPress, yPress));
+            } else {
+                gc.finishMove();
+            }
+        }
     }
 
     /**

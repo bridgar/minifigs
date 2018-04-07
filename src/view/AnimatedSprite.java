@@ -22,7 +22,7 @@ public class AnimatedSprite extends Sprite{
         super(object);
         this.images = images;
         frameIndex = 0;
-        this.shape = Shape.RECTANGLE;
+        this.shape = Shape.CIRCLE;
     }
 
     /**
@@ -31,12 +31,12 @@ public class AnimatedSprite extends Sprite{
      * @param affine The affine to apply to all renders.
      */
     @Override
-    public void render(GraphicsContext gc, Affine affine) {
+    public void renderOriginal(GraphicsContext gc, Affine affine) {
         Point2D pos = getCenter();
         Affine af = affine.clone();
         af.appendTranslation(pos.getX(), pos.getY());
         af.appendRotation(getAngle());
-        gc.transform(af);
+        gc.setTransform(af);
         gc.drawImage(images[frameIndex], -1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
         frameIndex = (frameIndex + 1) % images.length;
         renderChildren(gc, af);

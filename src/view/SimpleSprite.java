@@ -8,7 +8,7 @@ import model.GameObject;
 
 /**
  *  A SimpleSprite is a sprite that can be rendered with a simple shape.
- *  It contains a fillColor and strokeColor for determining how to render the shape.
+ *  It contains a fillColor and strokeColor for determining how to renderOriginal the shape.
  */
 public class SimpleSprite extends Sprite {
     private Color fillColor;
@@ -46,7 +46,7 @@ public class SimpleSprite extends Sprite {
      * @param affine The affine to apply to all renders.
      */
     @Override
-    public void render(GraphicsContext gc, Affine affine) {
+    public void renderOriginal(GraphicsContext gc, Affine affine) {
         if(shape == Shape.RECTANGLE)
             rectangleRender(gc, affine);
         else if(shape == Shape.CIRCLE)
@@ -57,8 +57,8 @@ public class SimpleSprite extends Sprite {
 
     /**
      *  Renders a rectangle of the dimensions of the GameObject that this Sprite represents.
-     * @param gc The GraphicsContext to render to.
-     * @param affine The Affine to apply to the render.
+     * @param gc The GraphicsContext to renderOriginal to.
+     * @param affine The Affine to apply to the renderOriginal.
      */
     private void rectangleRender(GraphicsContext gc, Affine affine) {
         Point2D center = getCenter();
@@ -77,8 +77,8 @@ public class SimpleSprite extends Sprite {
 
     /**
      *  Renders a circle of the dimensions of the GameObject that this Sprite represents.
-     * @param gc The GraphicsContext to render to.
-     * @param affine The Affine to apply to the render.
+     * @param gc The GraphicsContext to renderOriginal to.
+     * @param affine The Affine to apply to the renderOriginal.
      */
     private void circleRender(GraphicsContext gc, Affine affine) {
         Point2D center = getCenter();

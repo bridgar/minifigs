@@ -17,12 +17,12 @@ public class ImageSprite extends Sprite {
     /**
      *  An ImageSprite representing the provided GameObject with the provided Image.
      * @param object The GameObject to be represented.
-     * @param image The Image to render.
+     * @param image The Image to renderOriginal.
      */
     public ImageSprite(GameObject object, Image image) {
         super(object);
         this.image = image;
-        this.shape = Shape.RECTANGLE;
+        this.shape = Shape.CIRCLE;
     }
 
     /**
@@ -31,8 +31,10 @@ public class ImageSprite extends Sprite {
      * @param affine The affine to apply to all renders.
      */
     @Override
-    public void render(GraphicsContext gc, Affine affine){
+    public void renderOriginal(GraphicsContext gc, Affine affine){
         Point2D center = object.getCenter();
+        if(center == null)
+            System.out.println("Oops");
         Affine af = affine.clone();
         // Apply the translations and rotations to the affine of the world
         af.appendTranslation(center.getX(), center.getY());

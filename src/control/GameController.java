@@ -5,21 +5,22 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import model.Character;
 import model.GameObject;
 import model.Scenery;
-import model.Unit;
 import view.*;
 
 import java.util.ArrayList;
 
 /**
- *
+ *  GameController is the bulk of the Controller portion of the game.
  */
 public class GameController implements FrameListener{
     private final AnimationController ac;
-    private final ArrayList<Unit> units;      //TODO should have better data structure
+    private final ArrayList<Character> characters;      //TODO should have better data structure
     private final ArrayList<Scenery> scenery; //TODO should have better data structure
-    private final ArrayList<Unit> selectedUnits;
+    private final ArrayList<Character> selectedCharacters;
     private final ArrayList<GameAction> activeActions;
 
     private static final double X_MOVE = 5.0;
@@ -32,9 +33,9 @@ public class GameController implements FrameListener{
     public GameController(GraphicsContext gc) {
         ac = new AnimationController(System.nanoTime(), gc);
         ac.registerListener(this);
-        units = new ArrayList<Unit>();
+        characters = new ArrayList<Character>();
         scenery = new ArrayList<Scenery>();
-        selectedUnits = new ArrayList<Unit>();
+        selectedCharacters = new ArrayList<Character>();
         activeActions = new ArrayList<GameAction>();
 
         gc.getCanvas().addEventHandler(MouseEvent.ANY, new CanvasMouseHandler(this));
@@ -49,29 +50,73 @@ public class GameController implements FrameListener{
 
     /**
      *
-     * @param canvasX
-     * @param canvasY
      */
-    public void toggleSelectGameObject(double canvasX, double canvasY) {
-        Sprite s = ac.spriteAt(canvasX, canvasY);
+    private void clearSelectedCharacters() {
+        for(Character c : selectedCharacters) c.isSelected = false;
+        selectedCharacters.clear();
+    }
+
+    /**
+     *
+     * @param canvasPoint
+     */
+    public void selectCharacter(Point2D canvasPoint) {
+        Sprite s = ac.spriteAt(canvasPoint);
         if(s == null) {
-            selectedUnits.clear();
+            clearSelectedCharacters();
+            return;
+        }
+        GameObject go = s.getGameObject();
+        if(go instanceof Character) {
+            if (!selectedCharacters.contains(go)) {
+                selectedCharacters.add((Character) go);
+                go.isSelected = true;
+            }
+        } else clearSelectedCharacters(); //TODO maybe handle selecting Scenery?
+    }
+
+    /**
+     *
+     * @param canvasPoint
+     */
+    public void toggleSelectCharacter(Point2D canvasPoint) {
+        Sprite s = ac.spriteAt(canvasPoint);
+        if(s == null) {
+            clearSelectedCharacters();
             return;
         }
         GameObject go = s.getGameObject();
 
-        if(go instanceof Unit) toggleSelectUnit((Unit) go);
-        else selectedUnits.clear();
+        if(go instanceof Character) {
+            if (selectedCharacters.contains(go))
+                selectedCharacters.remove(go);
+            else
+                selectedCharacters.add((Character) go);
+            go.isSelected = !go.isSelected;
+        }
+        else clearSelectedCharacters(); //TODO maybe handle selecting Scenery?
 
     }
 
     /**
      *
-     * @param canvasX
-     * @param canvasY
+     * @param dragVec
      */
-    public void dragSelected(double canvasX, double canvasY) {
+    public void dragSelected(Point2D dragVec) {
+        for(Character u : selectedCharacters) {
+            u.setPhantomCenter(u.getCenter().add(dragVec));
+        }
+    }
 
+    /**
+     *
+     */
+    public void finishMove() {
+        for(Character c : selectedCharacters) {
+            if(!c.finishMove())
+                System.out.println("Invalid move");
+        }
+        clearSelectedCharacters();
     }
 
     /**
@@ -118,20 +163,21 @@ public class GameController implements FrameListener{
      *
      */
     private void initializeUnits() {
-        Unit earth = new Unit();
-        Unit sun = new Unit();
-        Unit circle = new Unit();
+        Character earth = new Character();
+        Character sun = new Character();
+        Character circle = new Character();
         earth.setHeight(100);
         earth.setWidth(100);
+        earth.setCenter(new Point2D(100,100));
         sun.setHeight(200);
         sun.setWidth(200);
         sun.setCenter(new Point2D(256, 256));
         circle.setHeight(100);
         circle.setWidth(100);
 
-        units.add(earth);
-        units.add(sun);
-        units.add(circle);
+        characters.add(earth);
+        characters.add(sun);
+        characters.add(circle);
 
         Image[] earthArr = {new Image("media/ufo_0.png"), new Image("media/ufo_1.png"),
                 new Image("media/ufo_2.png"), new Image("media/ufo_3.png"),
@@ -139,9 +185,9 @@ public class GameController implements FrameListener{
         Sprite earthSprite = new AnimatedSprite(earth, earthArr);
         Sprite sunSprite   = new ImageSprite(sun, new Image("media/sun.png"));
         Sprite circleSprite = new SimpleSprite(circle, Sprite.Shape.CIRCLE);
-        ac.addUnitSprite(sunSprite);
-        ac.addUnitSprite(earthSprite);
-        ac.addUnitSprite(circleSprite);
+        ac.addCharacterSprite(sunSprite);
+        ac.addCharacterSprite(earthSprite);
+        ac.addCharacterSprite(circleSprite);
     }
 
     /**
@@ -160,19 +206,10 @@ public class GameController implements FrameListener{
 
     /**
      *
-     * @param unit
-     */
-    private void toggleSelectUnit(Unit unit) {
-        if(selectedUnits.contains(unit)) selectedUnits.remove(unit);
-        else selectedUnits.add(unit);
-    }
-
-    /**
-     *
      * @param dt
      */
     private void moveSelectedLeft(double dt) {
-        for(Unit selected : selectedUnits) {
+        for(Character selected : selectedCharacters) {
             selected.setCenter(selected.getCenter().add(-1 * dt * X_MOVE, 0));
         }
     }
@@ -182,7 +219,7 @@ public class GameController implements FrameListener{
      * @param dt
      */
     private void moveSelectedRight(double dt) {
-        for(Unit selected : selectedUnits) {
+        for(Character selected : selectedCharacters) {
             selected.setCenter(selected.getCenter().add(dt * X_MOVE, 0));
         }
     }
@@ -192,7 +229,7 @@ public class GameController implements FrameListener{
      * @param dt
      */
     private void moveSelectedUp(double dt) {
-        for(Unit selected : selectedUnits) {
+        for(Character selected : selectedCharacters) {
             selected.setCenter(selected.getCenter().add(0, -1 * dt * Y_MOVE));
         }
     }
@@ -202,7 +239,7 @@ public class GameController implements FrameListener{
      * @param dt
      */
     private void moveSelectedDown(double dt) {
-        for(Unit selected : selectedUnits) {
+        for(Character selected : selectedCharacters) {
             selected.setCenter(selected.getCenter().add(0, dt * Y_MOVE));
         }
     }

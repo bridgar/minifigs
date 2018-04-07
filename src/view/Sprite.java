@@ -4,6 +4,7 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.*;
 import javafx.scene.transform.Affine;
 import model.GameObject;
 
@@ -18,6 +19,12 @@ public abstract class Sprite {
     final GameObject object;
     final ArrayList<Sprite> children = new ArrayList<Sprite>();
     Shape shape;
+
+    private static final RadialGradient GRAD = new RadialGradient(0,0,0.5,0.5,
+            0.5,true, CycleMethod.NO_CYCLE,
+            new Stop(0.1f, Color.rgb(255, 255, 102, 1)),
+            new Stop(1.0f, Color.rgb(255,255,102, .2)));
+
     //TODO scaling
 
     /**
@@ -54,11 +61,39 @@ public abstract class Sprite {
     double getAngle() { return object.getAngle(); }
 
     /**
-     *  Adds a child Sprite to this Sprite. This Sprite will render all child Sprites when it renders.
+     *  Adds a child Sprite to this Sprite. This Sprite will renderOriginal all child Sprites when it renders.
      * @param child Child sprite to add.
      */
     public void addChild(Sprite child) {
         children.add(child);
+    }
+
+    /**
+     *
+     * @param gc
+     * @param affine
+     */
+    public void render(GraphicsContext gc, Affine affine) {
+        if(object.isSelected) renderSelectedGlow(gc, affine);
+        renderOriginal(gc, affine);
+        renderPhantom(gc, affine);
+    }
+
+    protected void renderSelectedGlow(GraphicsContext gc, Affine affine) {
+        Point2D center = object.getCenter();
+        Affine af = affine.clone();
+        af.appendTranslation(center.getX(), center.getY());
+        gc.setTransform(af);
+        if(shape == Shape.CIRCLE) {
+            gc.setFill(GRAD);
+            gc.fillOval(getWidth() * -.55, getHeight() * -.55, getWidth()*1.1, getHeight()*1.1);
+
+        } else if(shape == Shape.RECTANGLE) {
+            gc.setFill(GRAD);
+            gc.fillRect(getWidth()* -.55, getHeight() * -.55, getWidth()*1.1, getHeight()*1.1);
+        }
+        for(Sprite s : children)
+            s.renderSelectedGlow(gc, af);
     }
 
     /**
@@ -67,7 +102,23 @@ public abstract class Sprite {
      * @param gc The GraphicsContext to be rendered to.
      * @param affine The affine to apply to all renders.
      */
-    public abstract void render(GraphicsContext gc, Affine affine);
+    protected abstract void renderOriginal(GraphicsContext gc, Affine affine);
+
+    /**
+     * Renders the phantom sprite if necessary.
+     * @param gc The GraphicsContext to be rendered to.
+     * @param affine The affine to apply to all renders.
+     */
+    protected void renderPhantom(GraphicsContext gc, Affine affine) {
+        if(object.getPhantomCenter() != null) {
+            Affine af = affine.clone();
+            Point2D relativeTranslation = object.getPhantomCenter().subtract(object.getCenter());
+            af.appendTranslation(relativeTranslation.getX(), relativeTranslation.getY());
+            gc.setGlobalAlpha(0.5);
+            renderOriginal(gc, af);
+            gc.setGlobalAlpha(1.0);
+        }
+    }
 
     /**
      *  Render the children of this Sprite.
@@ -76,7 +127,7 @@ public abstract class Sprite {
      */
     void renderChildren(GraphicsContext gc, Affine affine) {
         for(Sprite s : children)
-            s.render(gc, affine);
+            s.renderOriginal(gc, affine);
     }
 
     /**

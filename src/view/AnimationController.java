@@ -1,6 +1,7 @@
 package view;
 
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
 
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 
 /**
  *  AnimationController handles rendering frames.
- *  It contains a reference to the GraphicsContext to render the frames to,
+ *  It contains a reference to the GraphicsContext to renderOriginal the frames to,
  *  a list of FrameListeners that need notification of new frames,
  *  lists of all Sprites,
  *  and the Affine for the camera.
@@ -18,20 +19,20 @@ public class AnimationController extends AnimationTimer {
     private long lastNanoTime;
     private final GraphicsContext gc;
     private final ArrayList<FrameListener> listeners;
-    private final ArrayList<Sprite> unitSprites;    //TODO should have better data structure
+    private final ArrayList<Sprite> characterSprites;    //TODO should have better data structure
     private final ArrayList<Sprite> scenerySprites; //TODO should have better data structure
     private Affine cameraAffine;
 
     /**
-     *  Constructs an AnimationController with the start time and the GraphicsContext to render to.
+     *  Constructs an AnimationController with the start time and the GraphicsContext to renderOriginal to.
      * @param firstNanoTime The start time.
-     * @param gc The GraphicsContext to render to.
+     * @param gc The GraphicsContext to renderOriginal to.
      */
     public AnimationController(long firstNanoTime, GraphicsContext gc) {
         lastNanoTime = firstNanoTime;
         this.gc = gc;
         listeners = new ArrayList<FrameListener>();
-        unitSprites = new ArrayList<Sprite>();
+        characterSprites = new ArrayList<Sprite>();
         scenerySprites = new ArrayList<Sprite>();
         cameraAffine = new Affine();
 
@@ -47,11 +48,11 @@ public class AnimationController extends AnimationTimer {
     }
 
     /**
-     *  Adds a Sprite representing a Unit.
+     *  Adds a Sprite representing a Character.
      * @param sprite The Sprite to be added.
      */
-    public void addUnitSprite(Sprite sprite) {
-        unitSprites.add(sprite);
+    public void addCharacterSprite(Sprite sprite) {
+        characterSprites.add(sprite);
     }
 
     /**
@@ -63,20 +64,32 @@ public class AnimationController extends AnimationTimer {
     }
 
     /**
-     *  Finds the Sprite, if any, at the provided canvas coordinates.
-     * @param canvasX The x portion of the canvas coordinates.
-     * @param canvasY The y portion of the canvas coordinates.
+     *  Removes the specified Sprite representing a Character.
+     * @param sprite The Sprite to be removed.
+     */
+    public void removeUnitSprite(Sprite sprite) { characterSprites.remove(sprite); }
+
+
+    /**
+     *  Removes the specified Sprite representing a Scenery.
+     * @param sprite The Sprite to be removed.
+     */
+    public void removeScenerySprite(Sprite sprite) {scenerySprites.remove(sprite); }
+
+    /**
+     *  Finds the Sprite, if any, at the provided point on the canvas.
+     * @param canvasPoint The point on the canvas.
      * @return The first Sprite found at the provided location. Will be null if none found.
      */
-    public Sprite spriteAt(double canvasX, double canvasY) { //TODO better algorithm to go along with better data structure
-        for (Sprite s : unitSprites) {
-            if(s.contains(new Affine(), canvasX, canvasY)) { //TODO change this affine to the camera affine
+    public Sprite spriteAt(Point2D canvasPoint) { //TODO better algorithm to go along with better data structure
+        for (Sprite s : characterSprites) {
+            if(s.contains(new Affine(), canvasPoint.getX(), canvasPoint.getY())) { //TODO change this affine to the camera affine
                 return s;
             }
         }
 
         for (Sprite s : scenerySprites) {
-            if(s.contains(new Affine(), canvasX, canvasY)) { //TODO change this affine to the camera affine
+            if(s.contains(new Affine(), canvasPoint.getX(), canvasPoint.getY())) { //TODO change this affine to the camera affine
                 return s;
             }
         }
@@ -101,7 +114,7 @@ public class AnimationController extends AnimationTimer {
             s.render(gc, new Affine()); //TODO change this affine to the camera affine
         }
 
-        for (Sprite s : unitSprites) {
+        for (Sprite s : characterSprites) {
             s.render(gc, new Affine()); //TODO change this affine to the camera affine
         }
     }

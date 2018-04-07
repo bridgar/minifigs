@@ -8,9 +8,11 @@ import javafx.geometry.Point2D;
  */
 public abstract class GameObject { //TODO switch center and angle to a single Affine.
     private Point2D center;             // Point2D of center of object
-    private double width;
-    private double height;              // Width and height of object before rotation
+    private Point2D phantomCenter;      // Point2D of center of phantom moved object
     private double angle;               // Rotation in radians
+    private double width;               // Width of object before rotation
+    private double height;              // Height of object before rotation
+    public boolean isSelected;
 
 
     GameObject() { center = new Point2D(0, 0); }
@@ -25,6 +27,17 @@ public abstract class GameObject { //TODO switch center and angle to a single Af
      * @return The center point of the object.
      */
     public Point2D getCenter() { return center; }
+
+    /**
+     *
+     * @param phantomCenter
+     */
+    public void setPhantomCenter(Point2D phantomCenter) { this.phantomCenter = phantomCenter; }
+
+    /**
+     * @return
+     */
+    public Point2D getPhantomCenter() { return phantomCenter; }
 
     /**
      *  Changes the width of the object.
@@ -62,6 +75,16 @@ public abstract class GameObject { //TODO switch center and angle to a single Af
      */
     public double getAngle() { return angle; }
 
+
+    public boolean finishMove() {
+        if(true) { //TODO check for valid moves.
+            center = phantomCenter;
+            phantomCenter = null;
+            return true;
+        }
+        phantomCenter = null;
+        return false;
+    }
 
 
 }
