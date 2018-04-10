@@ -12,7 +12,7 @@ public abstract class GameObject { //TODO switch center and angle to a single Af
     private double angle;               // Rotation in radians
     private double width;               // Width of object before rotation
     private double height;              // Height of object before rotation
-    public boolean isSelected;
+    public String name;
 
 
     GameObject() { center = new Point2D(0, 0); }
@@ -84,6 +84,10 @@ public abstract class GameObject { //TODO switch center and angle to a single Af
         }
         phantomCenter = null;
         return false;
+    }
+
+    public String toString() {
+        return name;
     }
 
 

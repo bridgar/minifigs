@@ -1,11 +1,12 @@
 package control;
 
+import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import model.Character;
 import model.GameObject;
 import model.Scenery;
@@ -20,7 +21,7 @@ public class GameController implements FrameListener{
     private final AnimationController ac;
     private final ArrayList<Character> characters;      //TODO should have better data structure
     private final ArrayList<Scenery> scenery; //TODO should have better data structure
-    private final ArrayList<Character> selectedCharacters;
+    private final ListView<Character> currentCharacters;
     private final ArrayList<GameAction> activeActions;
 
     private static final double X_MOVE = 5.0;
@@ -30,12 +31,13 @@ public class GameController implements FrameListener{
      *
      * @param gc
      */
-    public GameController(GraphicsContext gc) {
-        ac = new AnimationController(System.nanoTime(), gc);
+    public GameController(GraphicsContext gc, ListView<Character> currentCharacters) {
+        ac = new AnimationController(System.nanoTime(), gc, currentCharacters);
         ac.registerListener(this);
         characters = new ArrayList<Character>();
         scenery = new ArrayList<Scenery>();
-        selectedCharacters = new ArrayList<Character>();
+        this.currentCharacters = currentCharacters;
+
         activeActions = new ArrayList<GameAction>();
 
         gc.getCanvas().addEventHandler(MouseEvent.ANY, new CanvasMouseHandler(this));
@@ -44,6 +46,9 @@ public class GameController implements FrameListener{
         initializeUnits();
         initializeScenery();
 
+        for(Character c : characters) {
+            currentCharacters.getItems().add(c);
+        }
 
         ac.start();
     }
@@ -52,8 +57,7 @@ public class GameController implements FrameListener{
      *
      */
     private void clearSelectedCharacters() {
-        for(Character c : selectedCharacters) c.isSelected = false;
-        selectedCharacters.clear();
+        currentCharacters.getSelectionModel().clearSelection();
     }
 
     /**
@@ -68,9 +72,8 @@ public class GameController implements FrameListener{
         }
         GameObject go = s.getGameObject();
         if(go instanceof Character) {
-            if (!selectedCharacters.contains(go)) {
-                selectedCharacters.add((Character) go);
-                go.isSelected = true;
+            if (!currentCharacters.getSelectionModel().getSelectedItems().contains(go)) {
+                currentCharacters.getSelectionModel().select((Character) go);
             }
         } else clearSelectedCharacters(); //TODO maybe handle selecting Scenery?
     }
@@ -88,11 +91,15 @@ public class GameController implements FrameListener{
         GameObject go = s.getGameObject();
 
         if(go instanceof Character) {
-            if (selectedCharacters.contains(go))
-                selectedCharacters.remove(go);
-            else
-                selectedCharacters.add((Character) go);
-            go.isSelected = !go.isSelected;
+            if (currentCharacters.getSelectionModel().getSelectedItems().contains(go)) {
+                int removed = currentCharacters.getItems().indexOf(go);
+                ObservableList<Integer> selected = currentCharacters.getSelectionModel().getSelectedIndices();
+                currentCharacters.getSelectionModel().clearSelection();
+                for(Integer i : selected)
+                    if(i != removed)
+                        currentCharacters.getSelectionModel().select(i);
+            } else
+                currentCharacters.getSelectionModel().select((Character) go);
         }
         else clearSelectedCharacters(); //TODO maybe handle selecting Scenery?
 
@@ -103,7 +110,7 @@ public class GameController implements FrameListener{
      * @param dragVec
      */
     public void dragSelected(Point2D dragVec) {
-        for(Character u : selectedCharacters) {
+        for(Character u : currentCharacters.getSelectionModel().getSelectedItems()) {
             u.setPhantomCenter(u.getCenter().add(dragVec));
         }
     }
@@ -112,7 +119,7 @@ public class GameController implements FrameListener{
      *
      */
     public void finishMove() {
-        for(Character c : selectedCharacters) {
+        for(Character c : currentCharacters.getSelectionModel().getSelectedItems()) {
             if(!c.finishMove())
                 System.out.println("Invalid move");
         }
@@ -164,8 +171,11 @@ public class GameController implements FrameListener{
      */
     private void initializeUnits() {
         Character earth = new Character();
+        earth.name = "Earth";
         Character sun = new Character();
+        sun.name = "Sun";
         Character circle = new Character();
+        circle.name = "Circle";
         earth.setHeight(100);
         earth.setWidth(100);
         earth.setCenter(new Point2D(100,100));
@@ -209,7 +219,7 @@ public class GameController implements FrameListener{
      * @param dt
      */
     private void moveSelectedLeft(double dt) {
-        for(Character selected : selectedCharacters) {
+        for(Character selected : currentCharacters.getSelectionModel().getSelectedItems()) {
             selected.setCenter(selected.getCenter().add(-1 * dt * X_MOVE, 0));
         }
     }
@@ -219,7 +229,7 @@ public class GameController implements FrameListener{
      * @param dt
      */
     private void moveSelectedRight(double dt) {
-        for(Character selected : selectedCharacters) {
+        for(Character selected : currentCharacters.getSelectionModel().getSelectedItems()) {
             selected.setCenter(selected.getCenter().add(dt * X_MOVE, 0));
         }
     }
@@ -229,7 +239,7 @@ public class GameController implements FrameListener{
      * @param dt
      */
     private void moveSelectedUp(double dt) {
-        for(Character selected : selectedCharacters) {
+        for(Character selected : currentCharacters.getSelectionModel().getSelectedItems()) {
             selected.setCenter(selected.getCenter().add(0, -1 * dt * Y_MOVE));
         }
     }
@@ -239,7 +249,7 @@ public class GameController implements FrameListener{
      * @param dt
      */
     private void moveSelectedDown(double dt) {
-        for(Character selected : selectedCharacters) {
+        for(Character selected : currentCharacters.getSelectionModel().getSelectedItems()) {
             selected.setCenter(selected.getCenter().add(0, dt * Y_MOVE));
         }
     }

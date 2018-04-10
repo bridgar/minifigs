@@ -1,9 +1,14 @@
 package view;
 
 import javafx.animation.AnimationTimer;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ListView;
 import javafx.scene.transform.Affine;
+import model.Character;
 
 import java.util.ArrayList;
 
@@ -14,13 +19,15 @@ import java.util.ArrayList;
  *  lists of all Sprites,
  *  and the Affine for the camera.
  */
-public class AnimationController extends AnimationTimer {
+public class AnimationController extends AnimationTimer implements ChangeListener {
 
     private long lastNanoTime;
     private final GraphicsContext gc;
     private final ArrayList<FrameListener> listeners;
     private final ArrayList<Sprite> characterSprites;    //TODO should have better data structure
-    private final ArrayList<Sprite> scenerySprites; //TODO should have better data structure
+    private ListView<Character> currentCharacters;
+    private ObservableList<Character> selectedCharacters;
+    private final ArrayList<Sprite> scenerySprites;      //TODO should have better data structure
     private Affine cameraAffine;
 
     /**
@@ -28,11 +35,14 @@ public class AnimationController extends AnimationTimer {
      * @param firstNanoTime The start time.
      * @param gc The GraphicsContext to renderOriginal to.
      */
-    public AnimationController(long firstNanoTime, GraphicsContext gc) {
+    public AnimationController(long firstNanoTime, GraphicsContext gc, ListView<Character> currentCharacters) {
         lastNanoTime = firstNanoTime;
         this.gc = gc;
         listeners = new ArrayList<FrameListener>();
         characterSprites = new ArrayList<Sprite>();
+        this.currentCharacters = currentCharacters;
+        currentCharacters.getSelectionModel().selectedItemProperty().addListener(this);
+        selectedCharacters = currentCharacters.getSelectionModel().getSelectedItems();
         scenerySprites = new ArrayList<Sprite>();
         cameraAffine = new Affine();
 
@@ -115,7 +125,7 @@ public class AnimationController extends AnimationTimer {
         }
 
         for (Sprite s : characterSprites) {
-            s.render(gc, new Affine()); //TODO change this affine to the camera affine
+            s.render(gc, new Affine(), selectedCharacters.contains(s.object)); //TODO change this affine to the camera affine
         }
     }
 
@@ -127,5 +137,10 @@ public class AnimationController extends AnimationTimer {
         for(FrameListener listener : listeners) {
             listener.newFrame(dt);
         }
+    }
+
+    @Override
+    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+        selectedCharacters = currentCharacters.getSelectionModel().getSelectedItems();
     }
 }

@@ -74,7 +74,11 @@ public abstract class Sprite {
      * @param affine
      */
     public void render(GraphicsContext gc, Affine affine) {
-        if(object.isSelected) renderSelectedGlow(gc, affine);
+        render(gc, affine, false);
+    }
+
+    public void render(GraphicsContext gc, Affine affine, boolean isSelected) {
+        if(isSelected) renderSelectedGlow(gc, affine);
         renderOriginal(gc, affine);
         renderPhantom(gc, affine);
     }
