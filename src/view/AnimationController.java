@@ -28,7 +28,8 @@ public class AnimationController extends AnimationTimer implements ChangeListene
     private ListView<Character> currentCharacters;
     private ObservableList<Character> selectedCharacters;
     private final ArrayList<Sprite> scenerySprites;      //TODO should have better data structure
-    private Affine cameraAffine;
+    private Affine cameraAffine, lastCameraAffine;
+    private double currentScale;
 
     /**
      *  Constructs an AnimationController with the start time and the GraphicsContext to renderOriginal to.
@@ -45,7 +46,8 @@ public class AnimationController extends AnimationTimer implements ChangeListene
         selectedCharacters = currentCharacters.getSelectionModel().getSelectedItems();
         scenerySprites = new ArrayList<Sprite>();
         cameraAffine = new Affine();
-
+        lastCameraAffine = new Affine();
+        currentScale = 1.0;
 
     }
 
@@ -93,18 +95,38 @@ public class AnimationController extends AnimationTimer implements ChangeListene
      */
     public Sprite spriteAt(Point2D canvasPoint) { //TODO better algorithm to go along with better data structure
         for (Sprite s : characterSprites) {
-            if(s.contains(new Affine(), canvasPoint.getX(), canvasPoint.getY())) { //TODO change this affine to the camera affine
+            if(s.contains(cameraAffine, canvasPoint.getX(), canvasPoint.getY())) { //TODO change this affine to the camera affine
                 return s;
             }
         }
 
         for (Sprite s : scenerySprites) {
-            if(s.contains(new Affine(), canvasPoint.getX(), canvasPoint.getY())) { //TODO change this affine to the camera affine
+            if(s.contains(cameraAffine, canvasPoint.getX(), canvasPoint.getY())) { //TODO change this affine to the camera affine
                 return s;
             }
         }
 
         return null;
+    }
+
+    public void moveCamera(Point2D moveVector) {
+        cameraAffine = lastCameraAffine.clone();
+        cameraAffine.prependTranslation(moveVector.getX(),moveVector.getY());
+    }
+
+    public void finishMoveCamera() {
+        lastCameraAffine = cameraAffine.clone();
+    }
+
+    public void scaleCamera(double deltaY) {
+        double scale = Math.pow(1.5,deltaY/40);
+        cameraAffine.appendScale(scale,scale);
+        lastCameraAffine = cameraAffine.clone();
+        currentScale *= scale;
+    }
+
+    public double getScale() {
+        return currentScale;
     }
 
     /**
@@ -121,11 +143,11 @@ public class AnimationController extends AnimationTimer implements ChangeListene
         notifyListeners(elapsedTime);
 
         for (Sprite s : scenerySprites) {
-            s.render(gc, new Affine()); //TODO change this affine to the camera affine
+            s.render(gc, cameraAffine); //TODO change this affine to the camera affine
         }
 
         for (Sprite s : characterSprites) {
-            s.render(gc, new Affine(), selectedCharacters.contains(s.object)); //TODO change this affine to the camera affine
+            s.render(gc, cameraAffine, selectedCharacters.contains(s.object)); //TODO change this affine to the camera affine
         }
     }
 

@@ -12,7 +12,6 @@ class CanvasMouseHandler implements EventHandler<MouseEvent> {
 
     private static final double MIN_DRAG_DISTANCE = 25.0;
     private boolean dragging = false;
-    private double xPress, yPress, xDrag, yDrag;
     private final GameController gc;
 
     /**
@@ -30,13 +29,14 @@ class CanvasMouseHandler implements EventHandler<MouseEvent> {
     @Override
     public void handle(MouseEvent event) {
         if(event.getEventType() == MouseEvent.MOUSE_PRESSED) {
-            xPress = event.getSceneX();
-            yPress = event.getSceneY();
+            double xPress = event.getSceneX();
+            double yPress = event.getSceneY();
+            gc.click(new Point2D(xPress, yPress));
             dragging = false;
         }
         else if(event.getEventType() == MouseEvent.DRAG_DETECTED) dragging = true;
         else if(event.getEventType() == MouseEvent.MOUSE_DRAGGED) handleDrag(event);
-        else if(event.getEventType() == MouseEvent.MOUSE_RELEASED) handleClick(event);
+        else if(event.getEventType() == MouseEvent.MOUSE_RELEASED) handleRelease(event);
     }
 
     /**
@@ -44,16 +44,15 @@ class CanvasMouseHandler implements EventHandler<MouseEvent> {
      * @param event
      */
     private void handleDrag(MouseEvent event) {
-        xDrag = event.getSceneX();
-        yDrag = event.getSceneY();
+        double xDrag = event.getSceneX();
+        double yDrag = event.getSceneY();
 
-        gc.selectCharacter(new Point2D(xPress, yPress)); // Select the Character that you're dragging.
 
-        Point2D dragVec = new Point2D(xDrag - xPress, yDrag - yPress);
+        Point2D dragVec = new Point2D(xDrag, yDrag);
 
         double dragDistance = dragVec.magnitude();
         if(dragDistance > MIN_DRAG_DISTANCE) {
-            gc.dragSelected(dragVec);
+            gc.drag(dragVec);
         }
     }
 
@@ -61,16 +60,10 @@ class CanvasMouseHandler implements EventHandler<MouseEvent> {
      *
      * @param event
      */
-    private void handleClick(MouseEvent event) {
+    private void handleRelease(MouseEvent event) {
         if(event.getButton() == MouseButton.SECONDARY) handleRightClick(event);
         else if(event.getButton() == MouseButton.MIDDLE) handleMiddleClick(event);
-        else {
-            if(!dragging) { // If the mouse is released and wasn't dragged, toggle select a GameObject.
-                gc.toggleSelectCharacter(new Point2D(xPress, yPress));
-            } else {
-                gc.finishMove();
-            }
-        }
+        else handleLeftClick(event);
     }
 
     /**
@@ -87,5 +80,11 @@ class CanvasMouseHandler implements EventHandler<MouseEvent> {
      */
     private void handleMiddleClick(MouseEvent event) {
 
+    }
+
+    private void handleLeftClick(MouseEvent event) {
+        if(dragging) {
+            gc.finishMove();
+        }
     }
 }

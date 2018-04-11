@@ -7,9 +7,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import model.*;
 import model.Character;
-import model.GameObject;
-import model.Scenery;
 import view.*;
 
 import java.util.ArrayList;
@@ -19,10 +19,15 @@ import java.util.ArrayList;
  */
 public class GameController implements FrameListener{
     private final AnimationController ac;
+    private final ArrayList<Army> armies;               //TODO switch over to keeping track of characters this way
     private final ArrayList<Character> characters;      //TODO should have better data structure
-    private final ArrayList<Scenery> scenery; //TODO should have better data structure
+    private final ArrayList<Scenery> scenery;           //TODO should have better data structure
     private final ListView<Character> currentCharacters;
     private final ArrayList<GameAction> activeActions;
+
+    private Point2D clickCoords;
+
+    private final CharacterFactory characterFactory = new CharacterFactory("data/Characters.csv");
 
     private static final double X_MOVE = 5.0;
     private static final double Y_MOVE = 5.0;
@@ -34,6 +39,7 @@ public class GameController implements FrameListener{
     public GameController(GraphicsContext gc, ListView<Character> currentCharacters) {
         ac = new AnimationController(System.nanoTime(), gc, currentCharacters);
         ac.registerListener(this);
+        armies = new ArrayList<Army>();
         characters = new ArrayList<Character>();
         scenery = new ArrayList<Scenery>();
         this.currentCharacters = currentCharacters;
@@ -41,6 +47,7 @@ public class GameController implements FrameListener{
         activeActions = new ArrayList<GameAction>();
 
         gc.getCanvas().addEventHandler(MouseEvent.ANY, new CanvasMouseHandler(this));
+        gc.getCanvas().addEventHandler(ScrollEvent.ANY, new CanvasScrollHandler(this));
         gc.getCanvas().addEventHandler(KeyEvent.ANY, new CanvasKeyHandler(this));
 
         initializeUnits();
@@ -62,14 +69,9 @@ public class GameController implements FrameListener{
 
     /**
      *
-     * @param canvasPoint
+     * @param s
      */
-    public void selectCharacter(Point2D canvasPoint) {
-        Sprite s = ac.spriteAt(canvasPoint);
-        if(s == null) {
-            clearSelectedCharacters();
-            return;
-        }
+    public void selectCharacter(Sprite s) {
         GameObject go = s.getGameObject();
         if(go instanceof Character) {
             if (!currentCharacters.getSelectionModel().getSelectedItems().contains(go)) {
@@ -78,40 +80,26 @@ public class GameController implements FrameListener{
         } else clearSelectedCharacters(); //TODO maybe handle selecting Scenery?
     }
 
-    /**
-     *
-     * @param canvasPoint
-     */
-    public void toggleSelectCharacter(Point2D canvasPoint) {
-        Sprite s = ac.spriteAt(canvasPoint);
-        if(s == null) {
-            clearSelectedCharacters();
-            return;
-        }
-        GameObject go = s.getGameObject();
-
-        if(go instanceof Character) {
-            if (currentCharacters.getSelectionModel().getSelectedItems().contains(go)) {
-                int removed = currentCharacters.getItems().indexOf(go);
-                ObservableList<Integer> selected = currentCharacters.getSelectionModel().getSelectedIndices();
-                currentCharacters.getSelectionModel().clearSelection();
-                for(Integer i : selected)
-                    if(i != removed)
-                        currentCharacters.getSelectionModel().select(i);
-            } else
-                currentCharacters.getSelectionModel().select((Character) go);
-        }
-        else clearSelectedCharacters(); //TODO maybe handle selecting Scenery?
-
+    public void click(Point2D clickVec) {
+        clickCoords = clickVec;
+        Sprite s = ac.spriteAt(clickVec);
+        if(s != null) selectCharacter(s);
+        else clearSelectedCharacters();
     }
 
     /**
      *
      * @param dragVec
      */
-    public void dragSelected(Point2D dragVec) {
-        for(Character u : currentCharacters.getSelectionModel().getSelectedItems()) {
-            u.setPhantomCenter(u.getCenter().add(dragVec));
+    public void drag(Point2D dragVec) {
+        ObservableList<Character> selected = currentCharacters.getSelectionModel().getSelectedItems();
+        if(!selected.isEmpty()) {
+            for (Character u : selected) {
+                Point2D movement = dragVec.subtract(clickCoords).multiply(1.0 / ac.getScale());
+                u.setPhantomCenter(u.getCenter().add(movement));
+            }
+        } else {
+            ac.moveCamera(dragVec.subtract(clickCoords));
         }
     }
 
@@ -119,11 +107,20 @@ public class GameController implements FrameListener{
      *
      */
     public void finishMove() {
-        for(Character c : currentCharacters.getSelectionModel().getSelectedItems()) {
-            if(!c.finishMove())
-                System.out.println("Invalid move");
+        ObservableList<Character> selected = currentCharacters.getSelectionModel().getSelectedItems();
+        if(!selected.isEmpty()) {
+            for (Character c : selected) {
+                if (!c.finishMove())
+                    System.out.println("Invalid move");
+            }
+            clearSelectedCharacters();
+        } else {
+            ac.finishMoveCamera();
         }
-        clearSelectedCharacters();
+    }
+
+    public void scrollMouse(double deltaY) {
+        ac.scaleCamera(deltaY);
     }
 
     /**
@@ -170,11 +167,12 @@ public class GameController implements FrameListener{
      *
      */
     private void initializeUnits() {
-        Character earth = new Character();
+
+        Character earth = characterFactory.getNewCharacter("Space Marines", "Troops", "Initiate");
         earth.name = "Earth";
-        Character sun = new Character();
+        Character sun = characterFactory.getNewCharacter("Space Marines", "Troops", "Initiate");
         sun.name = "Sun";
-        Character circle = new Character();
+        Character circle = characterFactory.getNewCharacter("Space Marines", "Troops", "Initiate");
         circle.name = "Circle";
         earth.setHeight(100);
         earth.setWidth(100);
@@ -206,8 +204,8 @@ public class GameController implements FrameListener{
     private void initializeScenery() {
         Scenery space = new Scenery();
         space.setCenter(new Point2D(256, 256));
-        space.setWidth(512);
-        space.setHeight(512);
+        space.setWidth(2048);
+        space.setHeight(2048);
 
         scenery.add(space);
         Sprite spaceSprite = new ImageSprite(space, new Image("media/space.png"));
