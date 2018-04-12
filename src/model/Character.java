@@ -10,7 +10,7 @@ public class Character extends GameObject{
     private final int weaponSkill, ballisticSkill, strength, toughness, wounds, initiative, attacks, leadership, save;
     private int currentWounds;
     private final ArrayList<Weapon> weapons = new ArrayList<Weapon>();
-    private Unit parent;
+    private Squad parent;
 
     public Character(String name, String description, String faction, String type, int weaponSkill, int ballisticSkill,
                      int strength, int toughness, int wounds, int initiative, int attacks, int leadership, int save,

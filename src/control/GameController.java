@@ -18,52 +18,45 @@ import java.util.ArrayList;
  *  GameController is the bulk of the Controller portion of the game.
  */
 public class GameController implements FrameListener{
-    private final AnimationController ac;
-    private final ArrayList<Army> armies;               //TODO switch over to keeping track of characters this way
-    private final ArrayList<Character> characters;      //TODO should have better data structure
-    private final ArrayList<Scenery> scenery;           //TODO should have better data structure
-    private final ListView<Character> currentCharacters;
-    private final ArrayList<GameAction> activeActions;
+    private static final ArrayList<Army> armies = new ArrayList<Army>();               //TODO switch over to keeping track of characters this way
+    private static final ArrayList<Character> characters = new ArrayList<Character>();      //TODO should have better data structure
+    private static final ArrayList<Scenery> scenery = new ArrayList<Scenery>();           //TODO should have better data structure
+    private static ListView<Character> currentCharacters;
+    private static final ArrayList<GameAction> activeActions = new ArrayList<GameAction>();;
 
-    private Point2D clickCoords;
+    private static Point2D clickCoords;
 
-    private final CharacterFactory characterFactory = new CharacterFactory("data/Characters.csv");
+    private static final CharacterFactory characterFactory = new CharacterFactory("data/Characters.csv");
 
     private static final double X_MOVE = 5.0;
     private static final double Y_MOVE = 5.0;
 
-    /**
-     *
-     * @param gc
-     */
-    public GameController(GraphicsContext gc, ListView<Character> currentCharacters) {
-        ac = new AnimationController(System.nanoTime(), gc, currentCharacters);
-        ac.registerListener(this);
-        armies = new ArrayList<Army>();
-        characters = new ArrayList<Character>();
-        scenery = new ArrayList<Scenery>();
-        this.currentCharacters = currentCharacters;
+    private static GameController gameController = new GameController();
 
-        activeActions = new ArrayList<GameAction>();
-
-        gc.getCanvas().addEventHandler(MouseEvent.ANY, new CanvasMouseHandler(this));
-        gc.getCanvas().addEventHandler(ScrollEvent.ANY, new CanvasScrollHandler(this));
-        gc.getCanvas().addEventHandler(KeyEvent.ANY, new CanvasKeyHandler(this));
-
+    private GameController() {
+        AnimationController.registerListener(this);
         initializeUnits();
         initializeScenery();
 
+    }
+
+    public static void setGraphicsContext(GraphicsContext gc) {
+        gc.getCanvas().addEventHandler(MouseEvent.ANY, new CanvasMouseHandler(gameController));
+        gc.getCanvas().addEventHandler(ScrollEvent.ANY, new CanvasScrollHandler(gameController));
+        gc.getCanvas().addEventHandler(KeyEvent.ANY, new CanvasKeyHandler(gameController));
+    }
+
+    public static void setCurrentCharacters(ListView<Character> currentCharacters) {
+        GameController.currentCharacters = currentCharacters;
         for(Character c : characters) {
             currentCharacters.getItems().add(c);
         }
-
-        ac.start();
     }
 
     /**
      *
      */
-    private void clearSelectedCharacters() {
+    private static void clearSelectedCharacters() {
         currentCharacters.getSelectionModel().clearSelection();
     }
 
@@ -71,7 +64,7 @@ public class GameController implements FrameListener{
      *
      * @param s
      */
-    public void selectCharacter(Sprite s) {
+    public static void selectCharacter(Sprite s) {
         GameObject go = s.getGameObject();
         if(go instanceof Character) {
             if (!currentCharacters.getSelectionModel().getSelectedItems().contains(go)) {
@@ -80,9 +73,9 @@ public class GameController implements FrameListener{
         } else clearSelectedCharacters(); //TODO maybe handle selecting Scenery?
     }
 
-    public void click(Point2D clickVec) {
+    public static void click(Point2D clickVec) {
         clickCoords = clickVec;
-        Sprite s = ac.spriteAt(clickVec);
+        Sprite s = AnimationController.spriteAt(clickVec);
         if(s != null) selectCharacter(s);
         else clearSelectedCharacters();
     }
@@ -91,22 +84,22 @@ public class GameController implements FrameListener{
      *
      * @param dragVec
      */
-    public void drag(Point2D dragVec) {
+    public static void drag(Point2D dragVec) {
         ObservableList<Character> selected = currentCharacters.getSelectionModel().getSelectedItems();
         if(!selected.isEmpty()) {
             for (Character u : selected) {
-                Point2D movement = dragVec.subtract(clickCoords).multiply(1.0 / ac.getScale());
+                Point2D movement = dragVec.subtract(clickCoords).multiply(1.0 / AnimationController.getScale());
                 u.setPhantomCenter(u.getCenter().add(movement));
             }
         } else {
-            ac.moveCamera(dragVec.subtract(clickCoords));
+            AnimationController.moveCamera(dragVec.subtract(clickCoords));
         }
     }
 
     /**
      *
      */
-    public void finishMove() {
+    public static void finishMove() {
         ObservableList<Character> selected = currentCharacters.getSelectionModel().getSelectedItems();
         if(!selected.isEmpty()) {
             for (Character c : selected) {
@@ -115,12 +108,12 @@ public class GameController implements FrameListener{
             }
             clearSelectedCharacters();
         } else {
-            ac.finishMoveCamera();
+            AnimationController.finishMoveCamera();
         }
     }
 
-    public void scrollMouse(double deltaY) {
-        ac.scaleCamera(deltaY);
+    public static void scrollMouse(double deltaY) {
+        AnimationController.scaleCamera(deltaY);
     }
 
     /**
@@ -133,7 +126,7 @@ public class GameController implements FrameListener{
      *
      * @param dt
      */
-    private void performActions(double dt) {
+    private static void performActions(double dt) {
         for(GameAction action : activeActions) {
             if(action == GameAction.MOVELEFT)
                 moveSelectedLeft(dt);
@@ -150,7 +143,7 @@ public class GameController implements FrameListener{
      *
      * @param action
      */
-    public void addAction(GameAction action) {
+    public static void addAction(GameAction action) {
         if(!activeActions.contains(action))
             activeActions.add(action);
     }
@@ -159,14 +152,14 @@ public class GameController implements FrameListener{
      *
      * @param action
      */
-    public void removeAction(GameAction action) {
+    public static void removeAction(GameAction action) {
         activeActions.remove(action);
     }
 
     /**
      *
      */
-    private void initializeUnits() {
+    private static void initializeUnits() {
 
         Character earth = characterFactory.getNewCharacter("Space Marines", "Troops", "Initiate");
         earth.name = "Earth";
@@ -193,15 +186,15 @@ public class GameController implements FrameListener{
         Sprite earthSprite = new AnimatedSprite(earth, earthArr);
         Sprite sunSprite   = new ImageSprite(sun, new Image("media/sun.png"));
         Sprite circleSprite = new SimpleSprite(circle, Sprite.Shape.CIRCLE);
-        ac.addCharacterSprite(sunSprite);
-        ac.addCharacterSprite(earthSprite);
-        ac.addCharacterSprite(circleSprite);
+        AnimationController.addCharacterSprite(sunSprite);
+        AnimationController.addCharacterSprite(earthSprite);
+        AnimationController.addCharacterSprite(circleSprite);
     }
 
     /**
      *
      */
-    private void initializeScenery() {
+    private static void initializeScenery() {
         Scenery space = new Scenery();
         space.setCenter(new Point2D(256, 256));
         space.setWidth(2048);
@@ -209,14 +202,14 @@ public class GameController implements FrameListener{
 
         scenery.add(space);
         Sprite spaceSprite = new ImageSprite(space, new Image("media/space.png"));
-        ac.addScenerySprite(spaceSprite);
+        AnimationController.addScenerySprite(spaceSprite);
     }
 
     /**
      *
      * @param dt
      */
-    private void moveSelectedLeft(double dt) {
+    private static void moveSelectedLeft(double dt) {
         for(Character selected : currentCharacters.getSelectionModel().getSelectedItems()) {
             selected.setCenter(selected.getCenter().add(-1 * dt * X_MOVE, 0));
         }
@@ -226,7 +219,7 @@ public class GameController implements FrameListener{
      *
      * @param dt
      */
-    private void moveSelectedRight(double dt) {
+    private static void moveSelectedRight(double dt) {
         for(Character selected : currentCharacters.getSelectionModel().getSelectedItems()) {
             selected.setCenter(selected.getCenter().add(dt * X_MOVE, 0));
         }
@@ -236,7 +229,7 @@ public class GameController implements FrameListener{
      *
      * @param dt
      */
-    private void moveSelectedUp(double dt) {
+    private static void moveSelectedUp(double dt) {
         for(Character selected : currentCharacters.getSelectionModel().getSelectedItems()) {
             selected.setCenter(selected.getCenter().add(0, -1 * dt * Y_MOVE));
         }
@@ -246,7 +239,7 @@ public class GameController implements FrameListener{
      *
      * @param dt
      */
-    private void moveSelectedDown(double dt) {
+    private static void moveSelectedDown(double dt) {
         for(Character selected : currentCharacters.getSelectionModel().getSelectedItems()) {
             selected.setCenter(selected.getCenter().add(0, dt * Y_MOVE));
         }

@@ -21,41 +21,36 @@ import java.util.ArrayList;
  */
 public class AnimationController extends AnimationTimer implements ChangeListener {
 
-    private long lastNanoTime;
-    private final GraphicsContext gc;
-    private final ArrayList<FrameListener> listeners;
-    private final ArrayList<Sprite> characterSprites;    //TODO should have better data structure
-    private ListView<Character> currentCharacters;
-    private ObservableList<Character> selectedCharacters;
-    private final ArrayList<Sprite> scenerySprites;      //TODO should have better data structure
-    private Affine cameraAffine, lastCameraAffine;
-    private double currentScale;
+    private static long lastNanoTime;
+    private static GraphicsContext gc;
+    private static final ArrayList<FrameListener> listeners = new ArrayList<FrameListener>();
+    private static final ArrayList<Sprite> characterSprites = new ArrayList<Sprite>();    //TODO should have better data structure
+    private static ListView<Character> currentCharacters;
+    private static ObservableList<Character> selectedCharacters;
+    private static final ArrayList<Sprite> scenerySprites = new ArrayList<Sprite>();      //TODO should have better data structure
+    private static Affine cameraAffine = new Affine();
+    private static Affine lastCameraAffine = new Affine();
+    private static double currentScale = 1.0;
 
-    /**
-     *  Constructs an AnimationController with the start time and the GraphicsContext to renderOriginal to.
-     * @param firstNanoTime The start time.
-     * @param gc The GraphicsContext to renderOriginal to.
-     */
-    public AnimationController(long firstNanoTime, GraphicsContext gc, ListView<Character> currentCharacters) {
-        lastNanoTime = firstNanoTime;
-        this.gc = gc;
-        listeners = new ArrayList<FrameListener>();
-        characterSprites = new ArrayList<Sprite>();
-        this.currentCharacters = currentCharacters;
-        currentCharacters.getSelectionModel().selectedItemProperty().addListener(this);
+    private static AnimationController ac = new AnimationController();
+
+    private AnimationController() {
+        lastNanoTime = System.nanoTime();
+    }
+
+    public static void setGraphicsContext(GraphicsContext gc) { AnimationController.gc = gc; }
+
+    public static void setCurrentCharacters(ListView<Character> currentCharacters) {
+        AnimationController.currentCharacters = currentCharacters;
+        currentCharacters.getSelectionModel().selectedItemProperty().addListener(ac);
         selectedCharacters = currentCharacters.getSelectionModel().getSelectedItems();
-        scenerySprites = new ArrayList<Sprite>();
-        cameraAffine = new Affine();
-        lastCameraAffine = new Affine();
-        currentScale = 1.0;
-
     }
 
     /**
      *  Adds the provided Listener to the list of Listeners.
      * @param listener The Listener to be added.
      */
-    public void registerListener(FrameListener listener) {
+    public static void registerListener(FrameListener listener) {
         listeners.add(listener);
     }
 
@@ -63,7 +58,7 @@ public class AnimationController extends AnimationTimer implements ChangeListene
      *  Adds a Sprite representing a Character.
      * @param sprite The Sprite to be added.
      */
-    public void addCharacterSprite(Sprite sprite) {
+    public static void addCharacterSprite(Sprite sprite) {
         characterSprites.add(sprite);
     }
 
@@ -71,7 +66,7 @@ public class AnimationController extends AnimationTimer implements ChangeListene
      *  Adds a Sprite representing a Scenery.
      * @param sprite The Sprite to be added.
      */
-    public void addScenerySprite(Sprite sprite) {
+    public static void addScenerySprite(Sprite sprite) {
         scenerySprites.add(sprite);
     }
 
@@ -79,21 +74,21 @@ public class AnimationController extends AnimationTimer implements ChangeListene
      *  Removes the specified Sprite representing a Character.
      * @param sprite The Sprite to be removed.
      */
-    public void removeUnitSprite(Sprite sprite) { characterSprites.remove(sprite); }
+    public static void removeUnitSprite(Sprite sprite) { characterSprites.remove(sprite); }
 
 
     /**
      *  Removes the specified Sprite representing a Scenery.
      * @param sprite The Sprite to be removed.
      */
-    public void removeScenerySprite(Sprite sprite) {scenerySprites.remove(sprite); }
+    public static void removeScenerySprite(Sprite sprite) {scenerySprites.remove(sprite); }
 
     /**
      *  Finds the Sprite, if any, at the provided point on the canvas.
      * @param canvasPoint The point on the canvas.
      * @return The first Sprite found at the provided location. Will be null if none found.
      */
-    public Sprite spriteAt(Point2D canvasPoint) { //TODO better algorithm to go along with better data structure
+    public static Sprite spriteAt(Point2D canvasPoint) { //TODO better algorithm to go along with better data structure
         for (Sprite s : characterSprites) {
             if(s.contains(cameraAffine, canvasPoint.getX(), canvasPoint.getY())) { //TODO change this affine to the camera affine
                 return s;
@@ -109,23 +104,23 @@ public class AnimationController extends AnimationTimer implements ChangeListene
         return null;
     }
 
-    public void moveCamera(Point2D moveVector) {
+    public static void moveCamera(Point2D moveVector) {
         cameraAffine = lastCameraAffine.clone();
         cameraAffine.prependTranslation(moveVector.getX(),moveVector.getY());
     }
 
-    public void finishMoveCamera() {
+    public static void finishMoveCamera() {
         lastCameraAffine = cameraAffine.clone();
     }
 
-    public void scaleCamera(double deltaY) {
+    public static void scaleCamera(double deltaY) {
         double scale = Math.pow(1.5,deltaY/40);
         cameraAffine.appendScale(scale,scale);
         lastCameraAffine = cameraAffine.clone();
         currentScale *= scale;
     }
 
-    public double getScale() {
+    public static double getScale() {
         return currentScale;
     }
 
@@ -155,7 +150,7 @@ public class AnimationController extends AnimationTimer implements ChangeListene
      *  Notifies all Listeners that a frame has been rendered and the elapsed time.
      * @param dt The elapsed time.
      */
-    private void notifyListeners(double dt) {
+    private static void notifyListeners(double dt) {
         for(FrameListener listener : listeners) {
             listener.newFrame(dt);
         }
@@ -165,4 +160,6 @@ public class AnimationController extends AnimationTimer implements ChangeListene
     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
         selectedCharacters = currentCharacters.getSelectionModel().getSelectedItems();
     }
+
+    public static void staticStart() { ac.start(); }
 }

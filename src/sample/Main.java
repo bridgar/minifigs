@@ -13,14 +13,17 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Character;
+import view.AnimationController;
 
 public class Main extends Application {
 
     private static final BorderPane PANE = new BorderPane();
     private static final ListView<Character> currentCharacters = new ListView<Character>();
 
+
     @Override
     public void start(Stage theStage) throws Exception{
+
         theStage.setTitle( "Timeline Example" );
 
         Group root = new Group();
@@ -32,18 +35,22 @@ public class Main extends Application {
         canvas.setFocusTraversable(true);
 
         PANE.setCenter(canvas);
-
         initializeRightPane();
-
         root.getChildren().add(PANE);
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        GameController game = new GameController(gc, currentCharacters);
-
-
-
+        initializeControllers(gc);
         theStage.show();
+
+    }
+
+    private void initializeControllers(GraphicsContext gc) {
+        AnimationController.setGraphicsContext(gc);
+        GameController.setGraphicsContext(gc);
+        AnimationController.setCurrentCharacters(currentCharacters);
+        GameController.setCurrentCharacters(currentCharacters);
+
+        AnimationController.staticStart();
     }
 
 
