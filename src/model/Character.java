@@ -6,17 +6,17 @@ import java.util.ArrayList;
  *  Scenery is the Model representation of all game units.
  */
 public class Character extends GameObject{
-    private final String description, faction, type;
+    private final String faction, type;
     private final int weaponSkill, ballisticSkill, strength, toughness, wounds, initiative, attacks, leadership, save;
     private int currentWounds;
+    private final ArrayList<Gear> gear = new ArrayList<Gear>();
     private final ArrayList<Weapon> weapons = new ArrayList<Weapon>();
     private Squad parent;
 
-    public Character(String name, String description, String faction, String type, int weaponSkill, int ballisticSkill,
+    public Character(String name, String faction, String type, int weaponSkill, int ballisticSkill,
                      int strength, int toughness, int wounds, int initiative, int attacks, int leadership, int save,
-                     String weaponString, String extras) {
+                     double height, double width) {
         this.name = name;
-        this.description = description;
         this.faction = faction;
         this.type = type;
         this.weaponSkill = weaponSkill;
@@ -28,14 +28,12 @@ public class Character extends GameObject{
         this.attacks = attacks;
         this.leadership = leadership;
         this.save = save;
-
         currentWounds = wounds;
 
-        //TODO weapons and extras
-    }
+        this.height = height;
+        this.width = width;
 
-    public String getDescription() {
-        return description;
+        //TODO weapons and extras
     }
 
     public int getWeaponSkill() {
@@ -82,43 +80,23 @@ public class Character extends GameObject{
         this.currentWounds = currentWounds;
     }
 
+    public ArrayList<Gear> getGear() { return gear; }
+
+    public void addGear(Gear addedGear) {
+        gear.add(addedGear);
+    }
+
+    public void removeGear(Gear removedGear) {
+        gear.remove(removedGear);
+    }
+
     public ArrayList<Weapon> getWeapons() {
         return weapons;
     }
 
-    public void addWeapon(Weapon weapon) {
-        weapons.add(weapon);
-    }
-
-    public void removeWeapon(Weapon weapon) {
-
-    }
-
-
-
-    //private constructor for cloning. Skips weapons and extras
-    private Character(String name, String description, String faction, String type, int weaponSkill, int ballisticSkill,
-                      int strength, int toughness, int wounds, int initiative, int attacks, int leadership, int save) {
-        this.name = name;
-        this.description = description;
-        this.faction = faction;
-        this.type = type;
-        this.weaponSkill = weaponSkill;
-        this.ballisticSkill = ballisticSkill;
-        this.strength = strength;
-        this.toughness = toughness;
-        this.wounds = wounds;
-        this.initiative = initiative;
-        this.attacks = attacks;
-        this.leadership = leadership;
-        this.save = save;
-
-        currentWounds = wounds;
-    }
-
     public Character clone() {
-        Character c =  new Character(name, description, faction, type, weaponSkill, ballisticSkill, strength, toughness,
-                wounds, initiative, attacks, leadership, save);
+        Character c =  new Character(name, faction, type, weaponSkill, ballisticSkill, strength, toughness,
+                wounds, initiative, attacks, leadership, save, height, width);
         c.weapons.addAll(weapons);
         //TODO extras
 

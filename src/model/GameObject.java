@@ -10,8 +10,8 @@ public abstract class GameObject { //TODO switch center and angle to a single Af
     private Point2D center;             // Point2D of center of object
     private Point2D phantomCenter;      // Point2D of center of phantom moved object
     private double angle;               // Rotation in radians
-    private double width;               // Width of object before rotation
-    private double height;              // Height of object before rotation
+    protected double width;               // Width of object before rotation
+    protected double height;              // Height of object before rotation
     public String name;
 
 

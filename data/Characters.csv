@@ -1,11 +1,11 @@
-Faction,Space Marines,,,,,,,,,,,
-Type,Troops,,,,,,,,,,,
-Initiate,,4,4,4,4,1,4,1,8,3,Infantry,
-Neophyte,,4,4,4,4,1,4,1,8,4,Infantry,
-Scout,,4,4,4,4,1,4,1,8,4,Infantry,
-Scout Sergeant,,4,4,4,4,1,4,1,8,4,"Infantry, Character",
-Space Marine,,4,4,4,4,1,4,1,8,3,Infantry,
-Space Marine Sergeant,,4,4,4,4,1,4,1,8,3,"Infantry, Character",
-Sword Brother,,4,4,4,4,1,4,2,9,3,"Infantry, Character",
-Veteran Sergeant,,4,4,4,4,1,4,2,9,3,"Infantry, Character",
-Veteran Scout Sergeant,,4,4,4,4,1,4,2,9,4,"Infantry, Character",
+name,ws,bs,s,t,w,i,a,l,save,type,height,width,shape
+Faction,Space Marines,,,,,,,,,,,,
+Initiate,4,4,4,4,1,4,1,8,3,Infantry,1,1,circle
+Neophyte,4,4,4,4,1,4,1,8,4,Infantry,1,1,circle
+Scout,4,4,4,4,1,4,1,8,4,Infantry,1,1,circle
+Scout Sergeant,4,4,4,4,1,4,1,8,4,"Infantry, Character",1,1,circle
+Space Marine,4,4,4,4,1,4,1,8,3,Infantry,1,1,circle
+Space Marine Sergeant,4,4,4,4,1,4,1,8,3,"Infantry, Character",1,1,circle
+Sword Brother,4,4,4,4,1,4,2,9,3,"Infantry, Character",1,1,circle
+Veteran Sergeant,4,4,4,4,1,4,2,9,3,"Infantry, Character",1,1,circle
+Veteran Scout Sergeant,4,4,4,4,1,4,2,9,4,"Infantry, Character",1,1,circle
