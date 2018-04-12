@@ -5,12 +5,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
 
-public class FactionFactory {
-    private static final HashMap<String, Faction> FACTIONS = new HashMap<>();
+public class SquadRoleFactory {
+    private static final HashMap<String, SquadRole> SQUAD_ROLES = new HashMap<>();
 
-    private FactionFactory ff = new FactionFactory("data/Factions.csv");
+    private SquadRoleFactory srf = new SquadRoleFactory("data/SquadRoles.csv");
 
-    private FactionFactory(String fileLocation) {
+    private SquadRoleFactory(String fileLocation) {
         try {
             File input = new File(fileLocation);
             FileReader fr = new FileReader(input);
@@ -22,8 +22,8 @@ public class FactionFactory {
                 String description = sp[1];
                 String imageLocation = sp[2];
 
-                Faction f = new Faction(name, description, imageLocation);
-                FACTIONS.put(name, f);
+                SquadRole sr = new SquadRole(name, description, imageLocation);
+                SQUAD_ROLES.put(name, sr);
             }
 
         } catch(Exception e) {
@@ -31,7 +31,7 @@ public class FactionFactory {
         }
     }
 
-    public static Faction getFaction(String name) {
-        return FACTIONS.get(name);
+    public static SquadRole getSquadRole(String name) {
+        return SQUAD_ROLES.get(name);
     }
 }

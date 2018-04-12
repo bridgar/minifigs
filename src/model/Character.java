@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class Character extends GameObject{
     private Faction faction;
-    private final String type;
+    private final String type; //TODO change this to enum
     private final int weaponSkill, ballisticSkill, strength, toughness, wounds, initiative, attacks, leadership, save;
     private int currentWounds;
     private final ArrayList<Gear> gear = new ArrayList<>();;
@@ -33,8 +33,6 @@ public class Character extends GameObject{
 
         this.height = height;
         this.width = width;
-
-        //TODO weapons and extras
     }
 
     public int getWeaponSkill() {
@@ -130,5 +128,9 @@ public class Character extends GameObject{
     public String toString() {
         return name + " (" + currentWounds + "/" + wounds + ")";
     }
+
+    public enum CharacterType {INFANTRY, BIKE, ARTILLERY, JUMP, JETPACK, BEAST, CAVALRY, MONSTROUS, FLYING_MONSTROUS,
+        GARGANTUAN, FLYING_GARGANTUAN, VEHICLE, TRANSPORT, FLYER, CHARIOT, OPEN_TOPPED_VEHICLE, HEAVY_VEHICLE, FAST_VEHICLE,
+        SKIMMER, WALKER, TANK, SUPER_HEAVY_VEHICLE, SUPER_HEAVY_WALKER, SUPER_HEAVY_FLYER, }
 
 }
