@@ -11,7 +11,9 @@ public class CharacterFactory {
     private static final HashMap<String, HashMap<String, Character>> TEMPLATES =
             new HashMap<>();
 
-    public CharacterFactory(String characterDataFile) {
+    private CharacterFactory cf = new CharacterFactory("data/Characters.csv");
+
+    private CharacterFactory(String characterDataFile) {
         try {
             File input = new File(characterDataFile);
             FileReader fr = new FileReader(input);

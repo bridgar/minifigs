@@ -3,7 +3,8 @@ package model;
 import java.util.ArrayList;
 
 public class Weapon {
-    private final String name, description, faction;
+    private final String name, description;
+    private final Faction faction;
     private final ArrayList<WeaponTag> tags = new ArrayList<WeaponTag>();
     private final double range;
     private final int strength, armorPierce;
@@ -12,7 +13,7 @@ public class Weapon {
                   int armorPierce, String tagsString) {
         this.name = name;
         this.description = description;
-        this.faction = faction;
+        this.faction = FactionFactory.getFaction(faction);
         this.range = range;
         this.strength = strength;
         this.armorPierce = armorPierce;
