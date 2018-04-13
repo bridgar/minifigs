@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class FactionFactory {
     private static final HashMap<String, Faction> FACTIONS = new HashMap<>();
 
-    private FactionFactory ff = new FactionFactory("data/Factions.csv");
+    private static FactionFactory ff = new FactionFactory("data/Factions.csv");
 
     private FactionFactory(String fileLocation) {
         try {

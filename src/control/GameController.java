@@ -26,8 +26,6 @@ public class GameController implements FrameListener{
 
     private static Point2D clickCoords;
 
-    private static final CharacterFactory characterFactory = new CharacterFactory("data/Characters.csv");
-
     private static final double X_MOVE = 5.0;
     private static final double Y_MOVE = 5.0;
 
@@ -161,11 +159,13 @@ public class GameController implements FrameListener{
      */
     private static void initializeUnits() {
 
-        Character earth = characterFactory.getNewCharacter("Space Marines", "Troops", "Initiate");
+        Squad s = SquadFactory.getNewSquad("Space Marines", "Tactical Squad");
+
+        Character earth = CharacterFactory.getNewCharacter("Space Marines","Initiate");
         earth.name = "Earth";
-        Character sun = characterFactory.getNewCharacter("Space Marines", "Troops", "Initiate");
+        Character sun = CharacterFactory.getNewCharacter("Space Marines","Initiate");
         sun.name = "Sun";
-        Character circle = characterFactory.getNewCharacter("Space Marines", "Troops", "Initiate");
+        Character circle = CharacterFactory.getNewCharacter("Space Marines","Initiate");
         circle.name = "Circle";
         earth.setHeight(100);
         earth.setWidth(100);

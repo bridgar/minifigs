@@ -11,7 +11,7 @@ public class CharacterFactory {
     private static final HashMap<String, HashMap<String, Character>> TEMPLATES =
             new HashMap<>();
 
-    private CharacterFactory cf = new CharacterFactory("data/Characters.csv");
+    private static CharacterFactory cf = new CharacterFactory("data/Characters.csv");;
 
     private CharacterFactory(String characterDataFile) {
         try {
@@ -26,21 +26,21 @@ public class CharacterFactory {
                     faction = sp[1];
                     TEMPLATES.put(faction, new HashMap<>());
                 }
-                else { //TODO add model dimensions (height and width of Character) and shape
+                else {
                     String name = sp[0];
-                    String description = sp[1];
-                    int ws = Integer.parseInt(sp[2]);
-                    int bs = Integer.parseInt(sp[3]);
-                    int s = Integer.parseInt(sp[4]);
-                    int t = Integer.parseInt(sp[5]);
-                    int w = Integer.parseInt(sp[6]);
-                    int i = Integer.parseInt(sp[7]);
-                    int a = Integer.parseInt(sp[8]);
-                    int l = Integer.parseInt(sp[9]);
-                    int save = Integer.parseInt(sp[10]);
+                    int ws = Integer.parseInt(sp[1]);
+                    int bs = Integer.parseInt(sp[2]);
+                    int s = Integer.parseInt(sp[3]);
+                    int t = Integer.parseInt(sp[4]);
+                    int w = Integer.parseInt(sp[5]);
+                    int i = Integer.parseInt(sp[6]);
+                    int a = Integer.parseInt(sp[7]);
+                    int l = Integer.parseInt(sp[8]);
+                    int save = Integer.parseInt(sp[9]);
+                    String type = sp[10];
                     double height = Double.parseDouble(sp[11]);
                     double width = Double.parseDouble(sp[12]);
-                    Character c = new Character(name, description, faction,
+                    Character c = new Character(name, faction, type,
                             ws, bs, s, t, w, i, a, l, save, height, width);
                     TEMPLATES.get(faction).put(name, c);
                 }

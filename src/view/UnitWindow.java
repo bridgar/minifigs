@@ -36,7 +36,7 @@ public class UnitWindow {
         unitName = new Label(squad.toString());
         unitName.setFont(new Font("Arial", 20));
         remakeUnitCharacters();
-        for(Character c : squad.characters)
+        for(Character c : squad.getCharacters())
             unitCharacters.getItems().add(c);
 
         if(stageHidden) stage.show();
