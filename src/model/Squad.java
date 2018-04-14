@@ -35,6 +35,9 @@ public class Squad {
             s = s.trim();
             for(int i = 0; i < quantity; i++)
                 characters.add(CharacterFactory.getNewCharacter(faction.getName(), s));
+            for(Character c : characters) {
+                c.setParent(this);
+            }
         }
     }
 
@@ -86,7 +89,13 @@ public class Squad {
         for(Character c : characters) {
             s.characters.add(c.clone());
         }
+        for(Character c : s.characters)
+            c.setParent(s);
         //TODO handle weapons and gear
         return s;
+    }
+
+    public String toString() {
+        return name;
     }
 }

@@ -17,15 +17,13 @@ import java.util.ArrayList;
  */
 public abstract class Sprite {
     final GameObject object;
-    final ArrayList<Sprite> children = new ArrayList<Sprite>();
+    final ArrayList<Sprite> children = new ArrayList<>();
     Shape shape;
 
     private static final RadialGradient GRAD = new RadialGradient(0,0,0.5,0.5,
             0.5,true, CycleMethod.NO_CYCLE,
             new Stop(0.1f, Color.rgb(255, 255, 102, 1)),
             new Stop(1.0f, Color.rgb(255,255,102, .2)));
-
-    //TODO scaling
 
     /**
      *  An invisible Sprite.

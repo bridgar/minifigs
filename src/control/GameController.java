@@ -18,11 +18,11 @@ import java.util.ArrayList;
  *  GameController is the bulk of the Controller portion of the game.
  */
 public class GameController implements FrameListener{
-    private static final ArrayList<Army> armies = new ArrayList<Army>();               //TODO switch over to keeping track of characters this way
-    private static final ArrayList<Character> characters = new ArrayList<Character>();      //TODO should have better data structure
-    private static final ArrayList<Scenery> scenery = new ArrayList<Scenery>();           //TODO should have better data structure
+    private static final ArrayList<Army> armies = new ArrayList<>();               //TODO switch over to keeping track of characters this way
+    private static final ArrayList<Squad> squads = new ArrayList<>();
+    private static final ArrayList<Scenery> scenery = new ArrayList<>();           //TODO should have better data structure
     private static ListView<Character> currentCharacters;
-    private static final ArrayList<GameAction> activeActions = new ArrayList<GameAction>();;
+    private static final ArrayList<GameAction> activeActions = new ArrayList<>();;
 
     private static Point2D clickCoords;
 
@@ -46,8 +46,10 @@ public class GameController implements FrameListener{
 
     public static void setCurrentCharacters(ListView<Character> currentCharacters) {
         GameController.currentCharacters = currentCharacters;
-        for(Character c : characters) {
-            currentCharacters.getItems().add(c);
+        for(Squad s : squads) {
+            for (Character c : s.getCharacters()) {
+                currentCharacters.getItems().add(c);
+            }
         }
     }
 
@@ -160,35 +162,11 @@ public class GameController implements FrameListener{
     private static void initializeUnits() {
 
         Squad s = SquadFactory.getNewSquad("Space Marines", "Tactical Squad");
+        squads.add(s);
 
-        Character earth = CharacterFactory.getNewCharacter("Space Marines","Initiate");
-        earth.name = "Earth";
-        Character sun = CharacterFactory.getNewCharacter("Space Marines","Initiate");
-        sun.name = "Sun";
-        Character circle = CharacterFactory.getNewCharacter("Space Marines","Initiate");
-        circle.name = "Circle";
-        earth.setHeight(100);
-        earth.setWidth(100);
-        earth.setCenter(new Point2D(100,100));
-        sun.setHeight(200);
-        sun.setWidth(200);
-        sun.setCenter(new Point2D(256, 256));
-        circle.setHeight(100);
-        circle.setWidth(100);
+        for(Character c : s.getCharacters())
+            AnimationController.addCharacterSprite(SpriteFactory.getNewCharacter(c));
 
-        characters.add(earth);
-        characters.add(sun);
-        characters.add(circle);
-
-        Image[] earthArr = {new Image("media/ufo_0.png"), new Image("media/ufo_1.png"),
-                new Image("media/ufo_2.png"), new Image("media/ufo_3.png"),
-                new Image("media/ufo_4.png"), new Image("media/ufo_5.png"),};
-        Sprite earthSprite = new AnimatedSprite(earth, earthArr);
-        Sprite sunSprite   = new ImageSprite(sun, new Image("media/sun.png"));
-        Sprite circleSprite = new SimpleSprite(circle, Sprite.Shape.CIRCLE);
-        AnimationController.addCharacterSprite(sunSprite);
-        AnimationController.addCharacterSprite(earthSprite);
-        AnimationController.addCharacterSprite(circleSprite);
     }
 
     /**

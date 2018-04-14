@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ListView;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import model.Character;
 
@@ -29,13 +30,16 @@ public class AnimationController extends AnimationTimer implements ChangeListene
     private static ObservableList<Character> selectedCharacters;
     private static final ArrayList<Sprite> scenerySprites = new ArrayList<Sprite>();      //TODO should have better data structure
     private static Affine cameraAffine = new Affine();
-    private static Affine lastCameraAffine = new Affine();
-    private static double currentScale = 1.0;
+    private static Affine lastCameraAffine;
+    private static final double DEFAULT_ZOOM = 1.0;
+    private static double currentScale = DEFAULT_ZOOM;
 
     private static AnimationController ac = new AnimationController();
 
     private AnimationController() {
         lastNanoTime = System.nanoTime();
+        cameraAffine.appendScale(DEFAULT_ZOOM, DEFAULT_ZOOM);
+        lastCameraAffine = cameraAffine;
     }
 
     public static void setGraphicsContext(GraphicsContext gc) { AnimationController.gc = gc; }
@@ -136,6 +140,10 @@ public class AnimationController extends AnimationTimer implements ChangeListene
         lastNanoTime = currentNanoTime;
 
         notifyListeners(elapsedTime);
+
+        gc.setFill(Color.BLACK);
+        gc.setTransform(new Affine());
+        gc.fillRect(0,0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
 
         for (Sprite s : scenerySprites) {
             s.render(gc, cameraAffine); //TODO change this affine to the camera affine

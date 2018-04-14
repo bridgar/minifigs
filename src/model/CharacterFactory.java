@@ -11,6 +11,8 @@ public class CharacterFactory {
     private static final HashMap<String, HashMap<String, Character>> TEMPLATES =
             new HashMap<>();
 
+    private static final double INCH_TO_PIXEL = 50;
+
     private static CharacterFactory cf = new CharacterFactory("data/Characters.csv");;
 
     private CharacterFactory(String characterDataFile) {
@@ -38,8 +40,8 @@ public class CharacterFactory {
                     int l = Integer.parseInt(sp[8]);
                     int save = Integer.parseInt(sp[9]);
                     String type = sp[10];
-                    double height = Double.parseDouble(sp[11]);
-                    double width = Double.parseDouble(sp[12]);
+                    double height = Double.parseDouble(sp[11]) * INCH_TO_PIXEL;
+                    double width = Double.parseDouble(sp[12]) * INCH_TO_PIXEL;
                     Character c = new Character(name, faction, type,
                             ws, bs, s, t, w, i, a, l, save, height, width);
                     TEMPLATES.get(faction).put(name, c);

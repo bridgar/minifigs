@@ -22,4 +22,8 @@ public class Faction {
         return imageLocation;
     }
 
+    public String toString() {
+        return name;
+    }
+
 }

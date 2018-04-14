@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class SquadRoleFactory {
     private static final HashMap<String, SquadRole> SQUAD_ROLES = new HashMap<>();
 
-    private SquadRoleFactory srf = new SquadRoleFactory("data/SquadRoles.csv");
+    private static SquadRoleFactory srf = new SquadRoleFactory("data/SquadRoles.csv");
 
     private SquadRoleFactory(String fileLocation) {
         try {

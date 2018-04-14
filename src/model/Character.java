@@ -93,9 +93,21 @@ public class Character extends GameObject{
         return weapons;
     }
 
+    public Faction getFaction() {
+        return faction;
+    }
+
+    public Squad getParent() {
+        return parent;
+    }
+
+    public void setParent(Squad parent) {
+        this.parent = parent;
+    }
+
     private Character(String name, Faction faction, String type, int weaponSkill, int ballisticSkill,
-    int strength, int toughness, int wounds, int initiative, int attacks, int leadership, int save,
-    int currentWounds, double height, double width, Squad parent) {
+                      int strength, int toughness, int wounds, int initiative, int attacks, int leadership, int save,
+                      int currentWounds, double height, double width) {
         this.name = name;
         this.faction = faction;
         this.type = type;
@@ -111,13 +123,12 @@ public class Character extends GameObject{
         this.currentWounds = currentWounds;
         this.height = height;
         this.width = width;
-        this.parent = parent;
 
     }
 
     public Character clone() {
         Character c =  new Character(name, faction, type, weaponSkill, ballisticSkill, strength, toughness,
-                wounds, initiative, attacks, leadership, save, currentWounds, height, width, parent);
+                wounds, initiative, attacks, leadership, save, currentWounds, height, width);
         c.weapons.addAll(weapons);
         c.gear.addAll(gear);
         //TODO extras

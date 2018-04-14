@@ -21,4 +21,8 @@ public class SquadRole {
     public String getImageLocation() {
         return imageLocation;
     }
+
+    public String toString() {
+        return name;
+    }
 }

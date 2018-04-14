@@ -69,6 +69,7 @@ public class SimpleSprite extends Sprite {
 
         gc.setFill(fillColor);
         gc.setStroke(strokeColor);
+        gc.setLineWidth(0.01);
         gc.fillRect(-1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
         gc.strokeRect(-1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
 
