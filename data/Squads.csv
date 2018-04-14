@@ -1,4 +1,4 @@
 ﻿name,role,characters,wargear,rules,options,point_cost
 Faction,Space Marines,,,,,
-Tactical Squad,Troops,"4 Space Marine,1 Space Marine Sergeant",,,,70
-Scout Squad,Troops,"4 Scout,1 Scout Sergeant",,,,55
+Tactical Squad,Troops,"4 Space Marine,1 Space Marine Sergeant","All:Boltgun,Bolt Pistol,Frag Grenade,Krak Grenade",,,70
+Scout Squad,Troops,"4 Scout,1 Scout Sergeant","All:Boltgun,Bolt Pistol,Frag Grenade,Krak Grenade",,,55

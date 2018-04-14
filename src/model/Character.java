@@ -10,13 +10,14 @@ public class Character extends GameObject{
     private final String type; //TODO change this to enum
     private final int weaponSkill, ballisticSkill, strength, toughness, wounds, initiative, attacks, leadership, save;
     private int currentWounds;
-    private final ArrayList<Gear> gear = new ArrayList<>();;
-    private final ArrayList<Weapon> weapons = new ArrayList<>();;
+    private final ArrayList<Gear> gear = new ArrayList<>();
+    private final ArrayList<Weapon> weapons = new ArrayList<>();
     private Squad parent;
 
     public Character(String name, String faction, String type, int weaponSkill, int ballisticSkill,
                      int strength, int toughness, int wounds, int initiative, int attacks, int leadership, int save,
                      double height, double width) {
+        super();
         this.name = name;
         this.faction = FactionFactory.getFaction(faction);
         this.type = type;
@@ -33,6 +34,7 @@ public class Character extends GameObject{
 
         this.height = height;
         this.width = width;
+        this.shape = Shape.CIRCLE;
     }
 
     public int getWeaponSkill() {
@@ -89,6 +91,10 @@ public class Character extends GameObject{
         gear.remove(removedGear);
     }
 
+    public void addWeapon(Weapon addedWeapon) { weapons.add(addedWeapon); }
+
+    public void removeWeapon(Weapon removedWeapon) { weapons.remove(removedWeapon); }
+
     public ArrayList<Weapon> getWeapons() {
         return weapons;
     }
@@ -107,7 +113,7 @@ public class Character extends GameObject{
 
     private Character(String name, Faction faction, String type, int weaponSkill, int ballisticSkill,
                       int strength, int toughness, int wounds, int initiative, int attacks, int leadership, int save,
-                      int currentWounds, double height, double width) {
+                      int currentWounds, double height, double width, Shape shape) {
         this.name = name;
         this.faction = faction;
         this.type = type;
@@ -123,12 +129,13 @@ public class Character extends GameObject{
         this.currentWounds = currentWounds;
         this.height = height;
         this.width = width;
-
+        this.shape = shape;
     }
 
+    @Override
     public Character clone() {
         Character c =  new Character(name, faction, type, weaponSkill, ballisticSkill, strength, toughness,
-                wounds, initiative, attacks, leadership, save, currentWounds, height, width);
+                wounds, initiative, attacks, leadership, save, currentWounds, height, width, shape);
         c.weapons.addAll(weapons);
         c.gear.addAll(gear);
         //TODO extras

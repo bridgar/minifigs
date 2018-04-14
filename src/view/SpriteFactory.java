@@ -44,8 +44,8 @@ public class SpriteFactory {
 
     public static Sprite getNewCharacter(Character object) {
         String type = SPRITES.get(object.getFaction().toString()).get(object.name);
-        if(type.equals("circle")) return new SimpleSprite(object, Sprite.Shape.CIRCLE);
-        else if(type.equals("rectangle")) return new SimpleSprite(object, Sprite.Shape.RECTANGLE);
+        if(type.equals("circle")) return new SimpleSprite(object);
+        else if(type.equals("rectangle")) return new SimpleSprite(object);
         else return new ImageSprite(object, new Image("media/" + object.getFaction() + "/" + type));
     }
 }

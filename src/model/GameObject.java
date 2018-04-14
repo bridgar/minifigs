@@ -14,8 +14,13 @@ public abstract class GameObject { //TODO switch center and angle to a single Af
     protected double height;              // Height of object before rotation
     public String name;
 
+    public Shape shape;
 
-    GameObject() { center = new Point2D(0, 0); }
+
+    GameObject() {
+        shape = Shape.RECTANGLE;
+        center = new Point2D(0, 0);
+    }
 
     /**
      *  Moves the center of the object.
@@ -91,4 +96,9 @@ public abstract class GameObject { //TODO switch center and angle to a single Af
     }
 
 
+
+    /**
+     *  The possible shapes for bounding boxes.
+     */
+    public enum Shape {RECTANGLE, CIRCLE }
 }

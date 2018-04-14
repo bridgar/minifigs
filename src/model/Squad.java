@@ -42,7 +42,35 @@ public class Squad {
     }
 
     private void prepareGear(String wargear) {
-        //TODO this might be complicated
+        if(wargear.charAt(0) == '\"') wargear = wargear.substring(1,wargear.length() - 1);
+        // Split by characters that it applies to
+        String[] groups = wargear.split("\\|");
+        for(String group : groups) {
+            // Split into name of group and gear
+            String[] split = group.split(":");
+            if(split[0].equals("All")) { // If the group is all, give the gear to the whole squad
+                for (Character c : characters) {
+                    addGearToCharacter(split[1], c);
+                }
+            } else {
+                for(Character c : characters) {
+                    if(c.name.equals(split[0])) // If the name matches the group, give the gear to that character
+                        addGearToCharacter(split[1], c);
+                }
+            }
+        }
+    }
+
+    private void addGearToCharacter(String gearString, Character character) {
+        String[] gearArr = gearString.split(",");
+        for(String gear : gearArr) {
+            Weapon weapon = WeaponFactory.getWeapon(faction.toString(), gear);
+            if(weapon != null) {
+                    character.addWeapon(weapon);
+            } else {
+                //TODO implement gear
+            }
+        }
     }
 
     private void prepareRules(String rules) {

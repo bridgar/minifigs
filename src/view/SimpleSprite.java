@@ -17,11 +17,9 @@ public class SimpleSprite extends Sprite {
     /**
      *  A SimpleSprite of the specified shape with white fill and black stroke.
      * @param object The GameObject that this Sprite represents.
-     * @param shape The Shape of this Sprite.
      */
-    public SimpleSprite(GameObject object, Shape shape) {
+    public SimpleSprite(GameObject object) {
         super(object);
-        this.shape = shape;
         fillColor = Color.WHITE;
         strokeColor = Color.BLACK;
     }
@@ -29,13 +27,11 @@ public class SimpleSprite extends Sprite {
     /**
      *  A SimpleSprite with the specified shape, fill color, and stroke color.
      * @param object The GameObject that this Sprite represents.
-     * @param shape The Shape of this Sprite.
      * @param fillColor The fillColor of this Sprite.
      * @param strokeColor The strokeColor of this Sprite.
      */
-    public SimpleSprite(GameObject object, Shape shape, Color fillColor, Color strokeColor) {
+    public SimpleSprite(GameObject object, Color fillColor, Color strokeColor) {
         super(object);
-        this.shape = shape;
         this.fillColor = fillColor;
         this.strokeColor = strokeColor;
     }
@@ -47,9 +43,9 @@ public class SimpleSprite extends Sprite {
      */
     @Override
     public void renderOriginal(GraphicsContext gc, Affine affine) {
-        if(shape == Shape.RECTANGLE)
+        if(object.shape == GameObject.Shape.RECTANGLE)
             rectangleRender(gc, affine);
-        else if(shape == Shape.CIRCLE)
+        else if(object.shape == GameObject.Shape.CIRCLE)
             circleRender(gc, affine);
         else {
         }

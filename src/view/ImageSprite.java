@@ -22,7 +22,6 @@ public class ImageSprite extends Sprite {
     public ImageSprite(GameObject object, Image image) {
         super(object);
         this.image = image;
-        this.shape = Shape.CIRCLE;
     }
 
     /**

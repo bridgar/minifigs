@@ -22,7 +22,6 @@ public class AnimatedSprite extends Sprite{
         super(object);
         this.images = images;
         frameIndex = 0;
-        this.shape = Shape.CIRCLE;
     }
 
     /**

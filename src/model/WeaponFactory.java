@@ -10,14 +10,14 @@ public class WeaponFactory {
     private static final HashMap<String, HashMap<String, Weapon>> TEMPLATES =
             new HashMap<>();
 
-    private WeaponFactory wf = new WeaponFactory("data/Weapons.csv");
+    private static WeaponFactory wf = new WeaponFactory("data/Weapons.csv");
 
     private WeaponFactory(String weaponDataFile) {
         try {
             File input = new File(weaponDataFile);
             FileReader fr = new FileReader(input);
             BufferedReader reader = new BufferedReader(fr);
-            String line;
+            String line = reader.readLine();
             String faction = "";
             String type = "";
             while((line = reader.readLine()) != null) {
@@ -43,7 +43,7 @@ public class WeaponFactory {
         }
     }
 
-    public static Weapon getWeapon(String faction, String type, String name) {
+    public static Weapon getWeapon(String faction, String name) {
         return TEMPLATES.get(faction).get(name);
     }
 }

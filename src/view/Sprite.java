@@ -18,7 +18,6 @@ import java.util.ArrayList;
 public abstract class Sprite {
     final GameObject object;
     final ArrayList<Sprite> children = new ArrayList<>();
-    Shape shape;
 
     private static final RadialGradient GRAD = new RadialGradient(0,0,0.5,0.5,
             0.5,true, CycleMethod.NO_CYCLE,
@@ -86,11 +85,11 @@ public abstract class Sprite {
         Affine af = affine.clone();
         af.appendTranslation(center.getX(), center.getY());
         gc.setTransform(af);
-        if(shape == Shape.CIRCLE) {
+        if(object.shape == GameObject.Shape.CIRCLE) {
             gc.setFill(GRAD);
             gc.fillOval(getWidth() * -.55, getHeight() * -.55, getWidth()*1.1, getHeight()*1.1);
 
-        } else if(shape == Shape.RECTANGLE) {
+        } else if(object.shape == GameObject.Shape.RECTANGLE) {
             gc.setFill(GRAD);
             gc.fillRect(getWidth()* -.55, getHeight() * -.55, getWidth()*1.1, getHeight()*1.1);
         }
@@ -140,9 +139,9 @@ public abstract class Sprite {
      * @return Whether or not the point is contained in this Sprite or any of its children.
      */
     public boolean contains(Affine affine, double x, double y) {
-        if(shape == Shape.RECTANGLE)
+        if(object.shape == GameObject.Shape.RECTANGLE)
             return rectangleContains(affine, x, y) || childrenContains(affine, x, y);
-        else if(shape == Shape.CIRCLE)
+        else if(object.shape == GameObject.Shape.CIRCLE)
             return circleContains(affine, x, y) || childrenContains(affine, x, y);
         else return childrenContains(affine, x, y);
     }
@@ -186,10 +185,5 @@ public abstract class Sprite {
     boolean circleContains(Affine affine, double x, double y) {
         return rectangleContains(affine, x, y); //TODO do real bounding circle calculations
     }
-
-    /**
-     *  The possible shapes for bounding boxes.
-     */
-    public enum Shape {RECTANGLE, CIRCLE }
 }
 

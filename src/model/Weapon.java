@@ -51,6 +51,12 @@ public class Weapon {
             this.value2 = value2;
         }
 
+        public String toString() {
+            if(value2 != 1) return type + " " + value1 + "/" + value2;
+            else if(value1 != 1) return type + " " + value1;
+            else return "" + type;
+        }
+
     }
 
     public enum WeaponType {
@@ -68,6 +74,7 @@ public class Weapon {
     }
 
     public void addTag(String tagString) {
+        if(tagString.charAt(0) == '\"') tagString = tagString.substring(1,tagString.length() - 1);
         WeaponType type;
         int value1 = 1, value2 = 1;
 
@@ -77,41 +84,79 @@ public class Weapon {
 
         switch(arr[0].toLowerCase()) {
             case "armourbane": type = WeaponType.Armourbane;
+            break;
             case "assault": type = WeaponType.Assault;
+            break;
             case "barrage": type = WeaponType.Barrage;
+            break;
             case "blast": type = WeaponType.Blast;
+            break;
             case "blind": type = WeaponType.Blind;
+            break;
             case "concussive": type = WeaponType.Concussive;
+            break;
             case "fleshbane": type = WeaponType.Fleshbane;
+            break;
             case "force": type = WeaponType.Force;
+            break;
             case "gets hot": type = WeaponType.GetsHot;
+            break;
             case "graviton": type = WeaponType.Graviton;
+            break;
             case "haywire": type = WeaponType.Haywire;
+            break;
             case "heavy": type = WeaponType.Heavy;
+            break;
             case "ignores cover": type = WeaponType.IgnoresCover;
+            break;
             case "interceptor": type = WeaponType.Interceptor;
+            break;
             case "melee": type = WeaponType.Melee;
+            break;
             case "melta": type = WeaponType.Melta;
+            break;
             case "one use only": type = WeaponType.OneUseOnly;
+            break;
             case "ordnance": type = WeaponType.Ordnance;
+            break;
             case "pistol": type = WeaponType.Pistol;
+            break;
             case "poisoned": type = WeaponType.Poisoned;
+            break;
             case "rapid fire": type = WeaponType.RapidFire;
+            break;
             case "rending": type = WeaponType.Rending;
+            break;
             case "salvo": type = WeaponType.Salvo;
+            break;
             case "savant lock": type = WeaponType.SavantLock;
+            break;
             case "shred": type = WeaponType.Shred;
+            break;
             case "skyfire": type = WeaponType.Skyfire;
+            break;
             case "sniper": type = WeaponType.Sniper;
+            break;
             case "specialist weapon": type = WeaponType.SpecialistWeapon;
+            break;
             case "strikedown": type = WeaponType.Strikedown;
+            break;
             case "torrent": type = WeaponType.Torrent;
+            break;
             case "twin-linked": type = WeaponType.TwinLinked;
+            break;
             case "two-handed": type = WeaponType.TwoHanded;
+            break;
             case "unwieldy": type = WeaponType.Unwieldy;
+            break;
             default: type = WeaponType.TEST;
+            break;
         }
 
         tags.add(new WeaponTag(type, value1, value2));
+    }
+
+    public String toString() {
+        return name;
     }
 }
