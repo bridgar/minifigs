@@ -10,6 +10,9 @@ import model.GameObject;
 
 import java.util.ArrayList;
 
+import static control.GameController.INCH_TO_PIXEL;
+import static control.GameController.PIXEL_TO_INCH;
+
 /**
  *  Sprite is the highest level View class. It represents any sprite to be rendered in game.
  *  It contains a reference to a GameObject and a list of child sprites.
@@ -83,15 +86,17 @@ public abstract class Sprite {
     protected void renderSelectedGlow(GraphicsContext gc, Affine affine) {
         Point2D center = object.getCenter();
         Affine af = affine.clone();
-        af.appendTranslation(center.getX(), center.getY());
+        af.appendTranslation(center.getX() * INCH_TO_PIXEL, center.getY() * INCH_TO_PIXEL);
         gc.setTransform(af);
+        double w = getWidth() * INCH_TO_PIXEL;
+        double h = getHeight() * INCH_TO_PIXEL;
         if(object.shape == GameObject.Shape.CIRCLE) {
             gc.setFill(GRAD);
-            gc.fillOval(getWidth() * -.55, getHeight() * -.55, getWidth()*1.1, getHeight()*1.1);
+            gc.fillOval(w * -.55, h * -.55, w*1.1, h*1.1);
 
         } else if(object.shape == GameObject.Shape.RECTANGLE) {
             gc.setFill(GRAD);
-            gc.fillRect(getWidth()* -.55, getHeight() * -.55, getWidth()*1.1, getHeight()*1.1);
+            gc.fillRect(w * -.55, h * -.55, w*1.1, h*1.1);
         }
         for(Sprite s : children)
             s.renderSelectedGlow(gc, af);
@@ -114,7 +119,8 @@ public abstract class Sprite {
         if(object.getPhantomCenter() != null) {
             Affine af = affine.clone();
             Point2D relativeTranslation = object.getPhantomCenter().subtract(object.getCenter());
-            af.appendTranslation(relativeTranslation.getX(), relativeTranslation.getY());
+            af.appendTranslation(relativeTranslation.getX() * INCH_TO_PIXEL,
+                    relativeTranslation.getY() * INCH_TO_PIXEL);
             gc.setGlobalAlpha(0.5);
             renderOriginal(gc, af);
             gc.setGlobalAlpha(1.0);
@@ -139,6 +145,8 @@ public abstract class Sprite {
      * @return Whether or not the point is contained in this Sprite or any of its children.
      */
     public boolean contains(Affine affine, double x, double y) {
+        x *= PIXEL_TO_INCH;
+        y *= PIXEL_TO_INCH;
         if(object.shape == GameObject.Shape.RECTANGLE)
             return rectangleContains(affine, x, y) || childrenContains(affine, x, y);
         else if(object.shape == GameObject.Shape.CIRCLE)

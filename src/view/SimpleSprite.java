@@ -6,6 +6,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import model.GameObject;
 
+import static control.GameController.INCH_TO_PIXEL;
+
 /**
  *  A SimpleSprite is a sprite that can be rendered with a simple shape.
  *  It contains a fillColor and strokeColor for determining how to renderOriginal the shape.
@@ -66,8 +68,10 @@ public class SimpleSprite extends Sprite {
         gc.setFill(fillColor);
         gc.setStroke(strokeColor);
         gc.setLineWidth(0.01);
-        gc.fillRect(-1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
-        gc.strokeRect(-1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
+        double w = getWidth() * INCH_TO_PIXEL;
+        double h = getHeight() * INCH_TO_PIXEL;
+        gc.fillRect(-1 * w/2,-1 * h/2, w, h);
+        gc.strokeRect(-1 * w/2,-1 * h/2, w, h);
 
         renderChildren(gc, af);
     }
@@ -80,14 +84,18 @@ public class SimpleSprite extends Sprite {
     private void circleRender(GraphicsContext gc, Affine affine) {
         Point2D center = getCenter();
         Affine af = affine.clone();
-        af.appendTranslation(center.getX(),center.getY());
+        af.appendTranslation(center.getX() * INCH_TO_PIXEL,center.getY() * INCH_TO_PIXEL);
         af.appendRotation(getAngle());
         gc.setTransform(af);
 
         gc.setFill(fillColor);
         gc.setStroke(strokeColor);
-        gc.fillOval(-1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
-        gc.strokeOval(-1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
+        gc.setLineWidth(0.01);
+        double w = getWidth() * INCH_TO_PIXEL;
+        double h = getHeight() * INCH_TO_PIXEL;
+
+        gc.fillOval(-1 * w/2,-1 * h/2, w, h);
+        gc.strokeOval(-1 * w/2,-1 * h/2, w, h);
 
         renderChildren(gc, af);
     }

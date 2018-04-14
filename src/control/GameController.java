@@ -26,8 +26,8 @@ public class GameController implements FrameListener{
 
     private static Point2D clickCoords;
 
-    private static final double X_MOVE = 5.0;
-    private static final double Y_MOVE = 5.0;
+    public static final double INCH_TO_PIXEL = 50;
+    public static final double PIXEL_TO_INCH = 1/INCH_TO_PIXEL;
 
     private static GameController gameController = new GameController();
 
@@ -89,6 +89,7 @@ public class GameController implements FrameListener{
         if(!selected.isEmpty()) {
             for (Character u : selected) {
                 Point2D movement = dragVec.subtract(clickCoords).multiply(1.0 / AnimationController.getScale());
+                movement = movement.multiply(PIXEL_TO_INCH);
                 u.setPhantomCenter(u.getCenter().add(movement));
             }
         } else {
@@ -127,16 +128,6 @@ public class GameController implements FrameListener{
      * @param dt
      */
     private static void performActions(double dt) {
-        for(GameAction action : activeActions) {
-            if(action == GameAction.MOVELEFT)
-                moveSelectedLeft(dt);
-            else if(action == GameAction.MOVERIGHT)
-                moveSelectedRight(dt);
-            else if(action == GameAction.MOVEUP)
-                moveSelectedUp(dt);
-            else if(action == GameAction.MOVEDOWN)
-                moveSelectedDown(dt);
-        }
     }
 
     /**
@@ -163,6 +154,7 @@ public class GameController implements FrameListener{
 
         Squad s = SquadFactory.getNewSquad("Space Marines", "Tactical Squad");
         squads.add(s);
+        s.initializePositions(new Point2D(1,1));
 
         for(Character c : s.getCharacters())
             AnimationController.addCharacterSprite(SpriteFactory.getNewCharacter(c));
@@ -174,53 +166,12 @@ public class GameController implements FrameListener{
      */
     private static void initializeScenery() {
         Scenery space = new Scenery();
-        space.setCenter(new Point2D(256, 256));
-        space.setWidth(2048);
-        space.setHeight(2048);
+        space.setWidth(100);
+        space.setHeight(100);
 
         scenery.add(space);
         Sprite spaceSprite = new ImageSprite(space, new Image("media/space.png"));
         AnimationController.addScenerySprite(spaceSprite);
-    }
-
-    /**
-     *
-     * @param dt
-     */
-    private static void moveSelectedLeft(double dt) {
-        for(Character selected : currentCharacters.getSelectionModel().getSelectedItems()) {
-            selected.setCenter(selected.getCenter().add(-1 * dt * X_MOVE, 0));
-        }
-    }
-
-    /**
-     *
-     * @param dt
-     */
-    private static void moveSelectedRight(double dt) {
-        for(Character selected : currentCharacters.getSelectionModel().getSelectedItems()) {
-            selected.setCenter(selected.getCenter().add(dt * X_MOVE, 0));
-        }
-    }
-
-    /**
-     *
-     * @param dt
-     */
-    private static void moveSelectedUp(double dt) {
-        for(Character selected : currentCharacters.getSelectionModel().getSelectedItems()) {
-            selected.setCenter(selected.getCenter().add(0, -1 * dt * Y_MOVE));
-        }
-    }
-
-    /**
-     *
-     * @param dt
-     */
-    private static void moveSelectedDown(double dt) {
-        for(Character selected : currentCharacters.getSelectionModel().getSelectedItems()) {
-            selected.setCenter(selected.getCenter().add(0, dt * Y_MOVE));
-        }
     }
 
     /**

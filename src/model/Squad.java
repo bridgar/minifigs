@@ -1,5 +1,7 @@
 package model;
 
+import javafx.geometry.Point2D;
+
 import java.util.ArrayList;
 
 public class Squad {
@@ -10,6 +12,8 @@ public class Squad {
     private final ArrayList<Character> characters = new ArrayList<>();
     private Detachment parent;
     private int pointCost;
+
+    private static final int ROW_WIDTH = 5;
 
     public Squad(String faction, String name, String role, String characters, String wargear, String rules, String options, int pointCost) {
         this.faction = FactionFactory.getFaction(faction);
@@ -103,6 +107,17 @@ public class Squad {
 
     public int getPointCost() {
         return pointCost;
+    }
+
+    public void initializePositions(Point2D firstLocation) {
+        int x = 0;
+        int y = 0;
+        for(Character c : characters) {
+            c.setCenter(firstLocation.add(x,y));
+
+            y = y + x/ROW_WIDTH;
+            x = (x+1) % ROW_WIDTH;
+        }
     }
 
     private Squad(Faction faction, String name, SquadRole role, int pointCost) {

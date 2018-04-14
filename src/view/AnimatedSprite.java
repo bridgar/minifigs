@@ -6,6 +6,8 @@ import javafx.scene.image.Image;
 import javafx.scene.transform.Affine;
 import model.GameObject;
 
+import static control.GameController.INCH_TO_PIXEL;
+
 /**
  *  An AnimatedSprite is a Sprite which can be rendered with an array of Images which represent animation frames.
  */
@@ -33,10 +35,12 @@ public class AnimatedSprite extends Sprite{
     public void renderOriginal(GraphicsContext gc, Affine affine) {
         Point2D pos = getCenter();
         Affine af = affine.clone();
-        af.appendTranslation(pos.getX(), pos.getY());
+        af.appendTranslation(pos.getX() * INCH_TO_PIXEL, pos.getY() * INCH_TO_PIXEL);
         af.appendRotation(getAngle());
         gc.setTransform(af);
-        gc.drawImage(images[frameIndex], -1 * getWidth()/2,-1 * getHeight()/2, getWidth(), getHeight());
+        double w = getWidth() * INCH_TO_PIXEL;
+        double h = getHeight() * INCH_TO_PIXEL;
+        gc.drawImage(images[frameIndex], -1 * w/2,-1 * h/2, w, h);
         frameIndex = (frameIndex + 1) % images.length;
         renderChildren(gc, af);
     }

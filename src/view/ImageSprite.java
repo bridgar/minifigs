@@ -6,6 +6,8 @@ import javafx.scene.image.Image;
 import javafx.scene.transform.Affine;
 import model.GameObject;
 
+import static control.GameController.INCH_TO_PIXEL;
+
 /**
  * An ImageSprite is a Sprite that can be rendered with an Image.
  * It contains an Image.
@@ -36,11 +38,13 @@ public class ImageSprite extends Sprite {
             System.out.println("Oops");
         Affine af = affine.clone();
         // Apply the translations and rotations to the affine of the world
-        af.appendTranslation(center.getX(), center.getY());
+        af.appendTranslation(center.getX() * INCH_TO_PIXEL, center.getY() * INCH_TO_PIXEL);
         af.appendRotation(getAngle());
 
         gc.setTransform(af);
-        gc.drawImage(image, -1 * getWidth() / 2, -1 * getHeight() / 2, getWidth(), getHeight());
+        double w = getWidth() * INCH_TO_PIXEL;
+        double h = getHeight() * INCH_TO_PIXEL;
+        gc.drawImage(image, -1 * w / 2, -1 * h / 2, w, h);
         renderChildren(gc, af);
     }
 }
