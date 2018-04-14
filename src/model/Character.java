@@ -1,5 +1,7 @@
 package model;
 
+import javafx.geometry.Point2D;
+
 import java.util.ArrayList;
 
 /**
@@ -13,6 +15,8 @@ public class Character extends GameObject{
     private final ArrayList<Gear> gear = new ArrayList<>();
     private final ArrayList<Weapon> weapons = new ArrayList<>();
     private Squad parent;
+
+    private static final double DEFAULT_MOVE_DISTANCE = 6;
 
     public Character(String name, String faction, String type, int weaponSkill, int ballisticSkill,
                      int strength, int toughness, int wounds, int initiative, int attacks, int leadership, int save,
@@ -109,6 +113,18 @@ public class Character extends GameObject{
 
     public void setParent(Squad parent) {
         this.parent = parent;
+    }
+
+    @Override
+    public void setPhantomCenter(Point2D phantomCenter) {
+        double moveDistance = DEFAULT_MOVE_DISTANCE;
+        if(phantomCenter.distance(getCenter()) <= moveDistance) {
+            super.setPhantomCenter(phantomCenter);
+        } else {
+            Point2D newMove = phantomCenter.subtract(getCenter()).normalize().multiply(moveDistance);
+            super.setPhantomCenter(getCenter().add(newMove));
+        }
+
     }
 
     private Character(String name, Faction faction, String type, int weaponSkill, int ballisticSkill,
