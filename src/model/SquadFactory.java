@@ -10,10 +10,16 @@ public class SquadFactory {
     private static final HashMap<String, HashMap<String, Squad>> SQUADS =
             new HashMap<>();
 
+    // Squads stored by id number
+    private static final HashMap<Integer, Squad> SQUADS_BY_ID = new HashMap<>();
+    // Squad id numbers stored by name
+    private static final HashMap<String, Integer> SQUAD_IDS = new HashMap<>();
+
     private static SquadFactory sf = new SquadFactory("data/Squads.csv");;
 
     private SquadFactory(String squadDataFile) {
         try {
+            int id = 0;
             File input = new File(squadDataFile);
             FileReader fr = new FileReader(input);
             BufferedReader reader = new BufferedReader(fr);
@@ -33,8 +39,12 @@ public class SquadFactory {
                     String rules = sp[4];
                     String options = sp[5];
                     int points = Integer.parseInt(sp[6]);
-                    Squad s = new Squad(faction, name, role, characters, wargear, rules, options, points);
+                    Squad s = new Squad(id, faction, name, role, characters, wargear, rules, options, points);
                     SQUADS.get(faction).put(name, s);
+                    SQUADS_BY_ID.put(id, s);
+                    SQUAD_IDS.put(name, id);
+
+                    id++;
                 }
             }
 

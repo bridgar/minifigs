@@ -1,5 +1,7 @@
 package model;
 
+import control.DiceController;
+
 import java.util.ArrayList;
 
 public class Weapon {
@@ -39,6 +41,13 @@ public class Weapon {
 
     public int getArmorPierce() {
         return armorPierce;
+    }
+
+    public void fire(Character c, Squad target) {
+        // For now, just shoot once
+        int numShots = 1;
+        // Roll to hit
+        DiceController.addDice(c.id, numShots, 7 - c.getBallisticSkill());
     }
 
     private class WeaponTag {

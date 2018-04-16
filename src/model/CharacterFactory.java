@@ -1,25 +1,27 @@
 package model;
 
-import control.GameController;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
 
-import static control.GameController.INCH_TO_PIXEL;
-
 
 public class CharacterFactory {
 
     // Characters stored by faction then name.
-    private static final HashMap<String, HashMap<String, Character>> TEMPLATES =
+    private static final HashMap<String, HashMap<String, Character>> CHARACTERS =
             new HashMap<>();
+
+    // Characters stored by id number
+    private static final HashMap<Integer, Character> CHARACTERS_BY_ID = new HashMap<>();
+    // Id numbers stored by name
+    private static final HashMap<String, Integer> CHARACTER_IDS = new HashMap<>();
 
     private static CharacterFactory cf = new CharacterFactory("data/Characters.csv");;
 
     private CharacterFactory(String characterDataFile) {
         try {
+            int id = 0;
             File input = new File(characterDataFile);
             FileReader fr = new FileReader(input);
             BufferedReader reader = new BufferedReader(fr);
@@ -29,7 +31,7 @@ public class CharacterFactory {
                 String[] sp = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
                 if(sp[0].equals("Faction")) {
                     faction = sp[1];
-                    TEMPLATES.put(faction, new HashMap<>());
+                    CHARACTERS.put(faction, new HashMap<>());
                 }
                 else {
                     String name = sp[0];
@@ -45,9 +47,12 @@ public class CharacterFactory {
                     String type = sp[10];
                     double height = Double.parseDouble(sp[11]);
                     double width = Double.parseDouble(sp[12]);
-                    Character c = new Character(name, faction, type,
+                    Character c = new Character(id, name, faction, type,
                             ws, bs, s, t, w, i, a, l, save, height, width);
-                    TEMPLATES.get(faction).put(name, c);
+                    CHARACTERS.get(faction).put(name, c);
+                    CHARACTERS_BY_ID.put(id, c);
+                    CHARACTER_IDS.put(name, id);
+                    id++;
                 }
             }
 
@@ -57,7 +62,15 @@ public class CharacterFactory {
     }
 
     public static Character getNewCharacter(String faction, String name) {
-        return TEMPLATES.get(faction).get(name).clone();
+        return CHARACTERS.get(faction).get(name).clone();
+    }
+
+    public static Character getCharacterFromId(int id) {
+        return CHARACTERS_BY_ID.get(id);
+    }
+
+    public static int getId(String name) {
+        return CHARACTER_IDS.get(name);
     }
 
 

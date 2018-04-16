@@ -156,9 +156,19 @@ public class GameController implements FrameListener{
         squads.add(s);
         s.initializePositions(new Point2D(1,1));
 
-        for(Character c : s.getCharacters())
-            AnimationController.addCharacterSprite(SpriteFactory.getNewCharacter(c));
+        s = SquadFactory.getNewSquad("Space Marines", "Scout Squad");
+        squads.add(s);
+        s.initializePositions(new Point2D(1,2));
 
+        for(Squad squad : squads) {
+            for (Character c : squad.getCharacters())
+                AnimationController.addCharacterSprite(SpriteFactory.getNewCharacter(c));
+            squad.newTurn(); //TODO move this somewhere else
+        }
+
+        Squad s1 = squads.get(0);
+        Squad s2 = squads.get(1);
+        s1.fireWeapon(s1.getCharacters(), WeaponFactory.getWeapon("Space Marines", "Bolt Pistol"), s2);
     }
 
     /**

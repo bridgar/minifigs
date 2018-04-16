@@ -1,11 +1,13 @@
 package model;
 
+import control.DiceController;
 import javafx.geometry.Point2D;
 
 import java.util.ArrayList;
 
 public class Squad {
 
+    public final int id;
     private final Faction faction;
     private final String name;
     private final SquadRole role;
@@ -13,9 +15,12 @@ public class Squad {
     private Detachment parent;
     private int pointCost;
 
+    private final ArrayList<Weapon> unfiredWeapons = new ArrayList<>();
+
     private static final int ROW_WIDTH = 5;
 
-    public Squad(String faction, String name, String role, String characters, String wargear, String rules, String options, int pointCost) {
+    public Squad(int id, String faction, String name, String role, String characters, String wargear, String rules, String options, int pointCost) {
+        this.id = id;
         this.faction = FactionFactory.getFaction(faction);
         this.name = name;
         this.role = SquadRoleFactory.getSquadRole(role);
@@ -24,6 +29,41 @@ public class Squad {
         prepareRules(rules);
         prepareOptions(options);
         this.pointCost = pointCost;
+    }
+
+    public void newTurn() {
+        for(Character c : characters) c.newTurn();
+        unfiredWeapons.clear();
+        for(Character c : characters) {
+            for(Weapon w : c.getWeapons())
+                if(!unfiredWeapons.contains(w)) unfiredWeapons.add(w);
+        }
+    }
+
+    public ArrayList<Weapon> getUnfiredWeapons() {
+        return unfiredWeapons;
+    }
+
+    public ArrayList<Character> charactersCanFireWeapon(Weapon w) {
+        ArrayList<Character> canFire = new ArrayList<>();
+        for(Character c : characters) {
+            if(!c.hasFiredThisTurn() && c.getWeapons().contains(w))
+                canFire.add(c);
+        }
+        return canFire;
+    }
+
+    public void fireWeapon(ArrayList<Character> firing, Weapon w, Squad target) {
+        if(!unfiredWeapons.contains(w))
+            throw new RuntimeException("Squad " + this + " fired weapon " + w + " when shouldn't have been able to");
+        unfiredWeapons.remove(w);
+        for (Character c : firing) {
+            c.fire(w, target);
+        }
+        ArrayList<Integer> successIds = DiceController.getSuccesses();
+
+        if(successIds.isEmpty()) return; //If everything missed, move on
+
     }
 
     private void prepareCharacters(String chars) {
@@ -57,8 +97,9 @@ public class Squad {
                     addGearToCharacter(split[1], c);
                 }
             } else {
+                int id = CharacterFactory.getId(split[0]);
                 for(Character c : characters) {
-                    if(c.name.equals(split[0])) // If the name matches the group, give the gear to that character
+                    if(c.id == id) // If the name matches the group, give the gear to that character
                         addGearToCharacter(split[1], c);
                 }
             }
@@ -120,7 +161,8 @@ public class Squad {
         }
     }
 
-    private Squad(Faction faction, String name, SquadRole role, int pointCost) {
+    private Squad(int id, Faction faction, String name, SquadRole role, int pointCost) {
+        this.id = id;
         this.faction = faction;
         this.name = name;
         this.role = role;
@@ -128,15 +170,15 @@ public class Squad {
     }
 
     public Squad clone() {
-        Squad s = new Squad(faction, name, role, pointCost);
+        Squad s = new Squad(id, faction, name, role, pointCost);
         for(Character c : characters) {
             s.characters.add(c.clone());
         }
         for(Character c : s.characters)
             c.setParent(s);
-        //TODO handle weapons and gear
         return s;
     }
+
 
     public String toString() {
         return name;

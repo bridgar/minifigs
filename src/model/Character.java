@@ -1,5 +1,6 @@
 package model;
 
+import control.DiceController;
 import javafx.geometry.Point2D;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
  *  Scenery is the Model representation of all game units.
  */
 public class Character extends GameObject{
+    public final int id;
     private Faction faction;
     private final String type; //TODO change this to enum
     private final int weaponSkill, ballisticSkill, strength, toughness, wounds, initiative, attacks, leadership, save;
@@ -16,12 +18,16 @@ public class Character extends GameObject{
     private final ArrayList<Weapon> weapons = new ArrayList<>();
     private Squad parent;
 
+    private boolean hasMovedThisTurn = false;
+    private boolean hasFiredThisTurn = false;
+
     private static final double DEFAULT_MOVE_DISTANCE = 6;
 
-    public Character(String name, String faction, String type, int weaponSkill, int ballisticSkill,
+    public Character(int id, String name, String faction, String type, int weaponSkill, int ballisticSkill,
                      int strength, int toughness, int wounds, int initiative, int attacks, int leadership, int save,
                      double height, double width) {
         super();
+        this.id = id;
         this.name = name;
         this.faction = FactionFactory.getFaction(faction);
         this.type = type;
@@ -115,6 +121,14 @@ public class Character extends GameObject{
         this.parent = parent;
     }
 
+    public boolean hasMovedThisTurn() {
+        return hasMovedThisTurn;
+    }
+
+    public boolean hasFiredThisTurn() {
+        return hasFiredThisTurn;
+    }
+
     @Override
     public void setPhantomCenter(Point2D phantomCenter) {
         double moveDistance = DEFAULT_MOVE_DISTANCE;
@@ -127,9 +141,35 @@ public class Character extends GameObject{
 
     }
 
-    private Character(String name, Faction faction, String type, int weaponSkill, int ballisticSkill,
+    public void newTurn() {
+        hasMovedThisTurn = false;
+        hasFiredThisTurn = false;
+    }
+
+    public void fire(Weapon weapon, Squad target) {
+        if(rangeTo(target) > weapon.getRange()) return; //Don't shoot if you're out of range
+        //TODO check cover/line of sight
+        weapon.fire(this, target);
+    }
+
+    private double rangeTo(Squad squad) {
+        double range = rangeTo(squad.getCharacters().get(0));
+        for(Character c : squad.getCharacters()) {
+            double newRange = rangeTo(c);
+            if(newRange < range) range = newRange;
+        }
+        return range;
+    }
+
+    private double rangeTo(Character c) {
+        //Center to center for now
+        return getCenter().distance(c.getCenter());
+    }
+
+    private Character(int id, String name, Faction faction, String type, int weaponSkill, int ballisticSkill,
                       int strength, int toughness, int wounds, int initiative, int attacks, int leadership, int save,
                       int currentWounds, double height, double width, Shape shape) {
+        this.id = id;
         this.name = name;
         this.faction = faction;
         this.type = type;
@@ -150,7 +190,8 @@ public class Character extends GameObject{
 
     @Override
     public Character clone() {
-        Character c =  new Character(name, faction, type, weaponSkill, ballisticSkill, strength, toughness,
+        Character c =  new Character(id,
+                name, faction, type, weaponSkill, ballisticSkill, strength, toughness,
                 wounds, initiative, attacks, leadership, save, currentWounds, height, width, shape);
         c.weapons.addAll(weapons);
         c.gear.addAll(gear);
